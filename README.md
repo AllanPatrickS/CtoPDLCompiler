@@ -1,7 +1,8 @@
 miniC (using flex&bison)
 ========
-This project is compiler project using flex and bison
-by Yubi Lee, Sungmin Kim by pair-programming.
+This project is converter/compiler project using flex and bison
+Forked by Yubi Lee, Sungmin Kim project.
+by Philippe Geraldeli and Allan Patrick.
 
 ## 1. Building
     make
@@ -10,14 +11,14 @@ by Yubi Lee, Sungmin Kim by pair-programming.
 
     flex miniC.l
     bison -d miniC.y
-    gcc -o miniC miniC.tab.c print.c symboltable.c lex.yy.c -g -lfl
+    gcc -o miniC miniC.tab.c print.c symboltable.c lex.yy.c Converter.c -g -lfl
     
 ## 2. How to run
     miniC < input.txt
 
 ## 3. Results
-    Abstract Syntax Tree (AST): tree.txt
-    Symbol table: table.txt
+    
+	Tree/Program in PDL:resultado.txt
 
 ## 4. We follow the rule below.
 
@@ -38,7 +39,13 @@ by Yubi Lee, Sungmin Kim by pair-programming.
     CallStmt := Call ;
     Call := id ( (ArgList)? )
     RetStmt := return (Expr)? ; 
-    
+	Expr := MINUS Expr | MathRel Eqltop Expr | MathRel | Call | Ids
+	MathRel := MathEql Relaop MathRel | MathEql
+	MathEql := TERM Addiop MathEql | TERM
+	TERM := FACTOR Multop TERM | FACTOR
+	FACTOR := ’(’ Expr ’)’ | FLOATNUM | INTNUM
+	Id := ID | ID [ Expr ]
+
     So, Our miniC program doesn't follow the rule below.
         1. ++, --
         2. According to this rule 
