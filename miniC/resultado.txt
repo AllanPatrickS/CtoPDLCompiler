@@ -1,0 +1,1 @@
+ (int i;int j;i = 1;j = 69;return 0)

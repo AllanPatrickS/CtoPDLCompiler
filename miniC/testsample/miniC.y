@@ -65,7 +65,6 @@ void lyyerror(YYLTYPE t, char *s, ...)
 %token INT FLOAT MINUS PLUS MULT DIV LE GE EQ NE GT LT
 %token IF ELSE FOR WHILE DO RETURN DQUOT_T SQUOT_T AMP_T 
 
-%right ELSE then;
 
 %type <type> Type
 
@@ -465,6 +464,7 @@ FACTOR: '(' Expr ')' {
 		struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
         factor->f = eExpre;  
         factor->fac.bracket = $2;
+
 	}
 	| FLOATNUM {
 		struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
@@ -569,16 +569,15 @@ For_s: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
            for_s->stmt = $9;
            $$ = for_s;
         }
-       ;
-	   
-If_s: IF '(' Expr ')' Stmt %prec then{
+       ;	
+If_s: IF '(' Expr ')' Stmt {
        struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
        if_s->cond=$3;
        if_s->if_=$5;
        if_s->else_=NULL;
        $$ = if_s;
     }
-      | IF '(' Expr ')' Stmt ELSE Stmt {
+      | IF '(' Expr ')' Stmt ELSE Stmt{
        struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
        if_s->cond=$3;
        if_s->if_=$5;

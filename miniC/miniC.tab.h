@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -69,45 +69,50 @@ extern int yydebug;
     DQUOT_T = 279,
     SQUOT_T = 280,
     AMP_T = 281,
-    UNARY = 282,
-    LOWER_THAN_ELSE = 283
+    then = 282
   };
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
-#line 30 "miniC.y" /* yacc.c:1909  */
+#line 33 "miniC.y" /* yacc.c:1909  */
 
-    struct PROGRAM       *ptr_program;
-    struct DECLARATION   *ptr_declaration;
-    struct IDENTIFIER    *ptr_identifier;
-    struct FUNCTION      *ptr_function;
-    struct PARAMETER     *ptr_parameter;
-    struct COMPOUNDSTMT  *ptr_compoundstmt;
-    struct STMT          *ptr_stmt;
-    struct ASSIGN        *ptr_assign;
-    struct CALL          *ptr_call;
-    struct ARG           *ptr_arg;
-    struct WHILE_S       *ptr_while_s;
-    struct FOR_S         *ptr_for_s;
-    struct IF_S          *ptr_if_s;
-    struct ID_S          *ptr_id_s;
-    struct EXPR          *ptr_expr;
-    struct ADDIOP        *ptr_addiop;
-    struct MULTOP        *ptr_multop;
-    struct RELAOP        *ptr_relaop;
-    struct EQLTOP        *ptr_eqltop;
+    struct PROGRAM       				*ptr_program;
+    struct DECLARATION   				*ptr_declaration;
+    struct IDENTIFIER    				*ptr_identifier;
+    struct FUNCTION      				*ptr_function;
+    struct PARAMETER     				*ptr_parameter;
+    struct COMPOUNDSTMT  				*ptr_compoundstmt;
+    struct STMT          				*ptr_stmt;
+    struct ASSIGN        				*ptr_assign;
+    struct CALL          				*ptr_call;
+    struct ARG           				*ptr_arg;
+    struct WHILE_S       				*ptr_while_s;
+    struct FOR_S         				*ptr_for_s;
+    struct IF_S         				*ptr_if_s;
+    struct ID_S          				*ptr_id_s;
+    struct EXPR          				*ptr_expr;
+    struct ADDIOP        				*ptr_addiop;
+    struct MULTOP        				*ptr_multop;
+    struct RELAOP        				*ptr_relaop;
+    struct EQLTOP        				*ptr_eqltop;
+	struct FACTOR		 				*ptr_factor;
+	struct TERM			 				*ptr_term;
+	struct MATHEQL		 				*ptr_math_eql;
+	struct MATHREL		 				*ptr_math_rel;
     Type_e type;
     //TODO int, float to char*
     int intnum;
     float floatnum;
     char* id;
 
-#line 110 "miniC.tab.h" /* yacc.c:1909  */
+#line 113 "miniC.tab.h" /* yacc.c:1909  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

@@ -289,58 +289,15 @@ void visitArg           (struct ARG* arg) {
     }   
     visitExpr(arg->expr);
 }
-void visitExpr          (struct EXPR* expr) {
+void visitExpr (struct EXPR* expr) {
     switch(expr->e) {
         case eUnop:
             fprintf(fp, "-");
             visitExpr(expr->expression.unop_->expr);
             break;
-
-
-        case eAddi:
-            visitExpr(expr->expression.addiop_->lhs);
-            if(expr->expression.addiop_->a == ePlus)
-                fprintf(fp, " + ");
-            else
-                fprintf(fp, " - ");
-            visitExpr(expr->expression.addiop_->rhs);
-            break;
-
-
-        case eMulti:
-            visitExpr(expr->expression.multop_->lhs);
-            if(expr->expression.multop_->m == eMult)
-                fprintf(fp, " * ");
-            else
-                fprintf(fp, " / ");
-            visitExpr(expr->expression.multop_->rhs);
-            break;
-
-        case eRela:
-            visitExpr(expr->expression.relaop_->lhs);
-            switch(expr->expression.relaop_->r) {
-                case eLT:
-                    fprintf(fp, " < ");
-                    break;
-
-                case eGT:
-                    fprintf(fp, " > ");
-                    break;
-
-                case eLE:
-                    fprintf(fp, " <= ");
-
-                    break;
-
-                case eGE:
-                    fprintf(fp, " >= ");
-                    break;
-            }
-            visitExpr(expr->expression.relaop_->rhs);
-            break;
-
+			
         case eEqlt:
-            visitExpr(expr->expression.eqltop_->lhs);
+            visitMathRel(expr->expression.eqltop_->lhs);
             if(expr->expression.eqltop_->e == eEQ) {
                 fprintf(fp, " == ");
             } else {
@@ -348,30 +305,105 @@ void visitExpr          (struct EXPR* expr) {
             }
             visitExpr(expr->expression.eqltop_->rhs);
             break;
-
+			
+		case eMathRel:
+			visitMathRel(expr->expression.mathrel_);
+			break;
+			
         case eCallExpr:
             visitCallStmt(expr->expression.call_);
-            break;
-
-        case eExpr:
-            fprintf(fp, "(");
-            visitExpr(expr->expression.bracket);
-            fprintf(fp, ")");
             break;
 
         case eId:
             visitId_s(expr->expression.ID_);
             break;
-        case eIntnum:
-            fprintf(fp, "%d", expr->expression.intnum);
-            break;
 
-        case eFloatnum:
-            fprintf(fp, "%f", expr->expression.floatnum);
-            break;
     }
 
 }
+
+void visitMathRel(struct MATHREL* math){
+	switch(math->r) {
+        	case eRela:
+				visitMathEql(math->math_rel.relaop_->lhs);
+				switch(math->math_rel.relaop_->r) {
+					case eLT:
+						fprintf(fp, " < ");
+						break;
+
+					case eGT:
+						fprintf(fp, " > ");
+						break;
+
+					case eLE:
+						fprintf(fp, " <= ");
+
+						break;
+
+					case eGE:
+						fprintf(fp, " >= ");
+						break;
+				}
+				visitMathRel(math->math_rel.relaop_->rhs);
+				break;
+			case eMathEql:
+				visitMathEql(math->math_rel.MathEql_);
+				break;
+			
+    }
+
+}
+
+void visitMathEql(struct MATHEQL* math){
+	switch(math->e) {
+        	case eAddi:
+				visitTerm(math->math_eql.addiop_->lhs);
+				if(math->math_eql.addiop_->a == ePlus)
+					fprintf(fp, " + ");
+				else
+					fprintf(fp, " - ");
+				visitMathEql(math->math_eql.addiop_->rhs);
+				break;
+			case eTerm:
+				visitTerm(math->math_eql.term_);
+				break;
+			
+    }
+}
+
+void visitTerm (struct TERM* term){
+	switch(term->t) {
+        case eMulti:
+            visitFactor(term->ter.multop_->lhs);
+            if(term->ter.multop_->m == eMult)
+                fprintf(fp, " * ");
+            else
+                fprintf(fp, " / ");
+            visitTerm(term->ter.multop_->rhs);
+            break;
+			case eFactor:
+				visitFactor(term->ter.Facop_);
+				break;
+			
+    }
+}
+
+void visitFactor(struct FACTOR* factor){
+	switch(factor->f) {
+		case eExpre:
+            fprintf(fp, "(");
+            visitExpr(factor->fac.bracket);
+            fprintf(fp, ")");
+            break;
+		case eFloatnum:
+            fprintf(fp, "%f", factor->fac.floatnum);
+            break;
+		case eIntnum:
+            fprintf(fp, "%d", factor->fac.intnum);
+            break;
+    }
+}
+
 void visitWhile_s       (struct WHILE_S* while_s) {
     if(while_s->do_while == true) {
         //making node for symbol table

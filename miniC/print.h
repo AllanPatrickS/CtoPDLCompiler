@@ -14,3 +14,7 @@ void visitWhile_s       (struct WHILE_S* while_s);
 void visitFor_s         (struct FOR_S* for_s);
 void visitIf_s          (struct IF_S* if_s);
 void visitId_s          (struct ID_S* id_s);
+void visitMathRel       (struct MATHREL* math);
+void visitMathEql		(struct MATHEQL* math);
+void visitTerm 			(struct TERM* ter);
+void visitFactor		(struct FACTOR* factor);

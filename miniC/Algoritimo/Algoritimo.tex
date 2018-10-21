@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\title{Compiler C to PDL}
+\date{09-08-2018}
+\author{Philippe Geraldeli Araujo e Allan Patrick}
+
+\begin{document}
+
+\maketitle
+\pagenumbering{gobble}
+\newpage
+\pagenumbering{arabic}
+
+\section{C to PDL}
+
+\paragraph{Fork do miniC feito por eubnara\\}
+Este compilador tem o objetivo de converter C para PDL(Propositional Dynamic Logic). \vspace{10mm}
+
+\hspace{-6.5mm} \small 
+Program := (DeclList)? (FuncList)?   // DeclList FuncList ou DeclList ou FuncList  \\
+DeclList := (Declaration)+          // Declaration ou DeclList Declaration \\
+FuncList := (Function)+ \\ 
+Declaration := Type IdentList \\
+IdentList := identifier (, identifier)*  // identifier ou IdentList , identifier \\
+Identifier := id ou id [ intnum ]      // (Note) [, ] are not symbols used in regular expression \\
+Function := Type id ( (ParamList)? ) CompoundStmt \\
+ParamList := Type identifier (, Type identifier)* \\
+Type := int ou float \\
+CompoundStmt := { (DeclList)? StmtList } \\
+StmtList := (Stmt)* \\
+Stmt := AssignStmt ou CallStmt ou RetStmt ou WhileStmt ou ForStmt ou IfStmt ou CompoundStmt ou ; \\
+AssignStmt :=Assign  \\
+Assign := id = Expr ou id [ Expr ] = Expr \\
+CallStmt := Call ; \\
+Call := id ( (ArgList)? ) \\
+RetStmt := return (Expr)? ;  \\
+Expr := MINUS Expr $|$ MathRel Eqltop Expr $|$ MathRel $|$ Call $|$ Ids \\
+MathRel := MathEql Relaop MathRel $|$ MathEql \\
+MathEql := TERM Addiop MathEql $|$ TERM \\
+TERM := FACTOR Multop TERM $|$ FACTOR \\
+FACTOR := '(' Expr ')' $|$ FLOATNUM $|$ INTNUM \\
+Id := ID $|$ ID [ Expr ] \\
+
+
+
+So, Our miniC program doesn't follow the rule below.  \\
+    1. ++, --  \\
+    2. According to this rule  :=  CompoundStmt := { (DeclList)? StmtList }  \\
+
+\section{Algorithm Converter} 
+Input = Arquivo em C \\
+Output = Arvore/Arquivo
+\vspace{10mm}
+\begin{algorithm}
+\begin{algorithmic}
+\IF{$DeclList$}
+	\IF{$Declaration$}
+		\STATE Adiciona o tipo + Identifier na arvore. 
+	\ENDIF
+	\IF{$DeclList$}
+		\STATE Chama recursivamente DeclList
+	\ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\vspace{-10mm}
+\begin{algorithm}
+
+\begin{algorithmic}
+\IF {$FunctionList$}
+	\IF{$Function$}
+		\STATE Adiciona novo escopo de função na arvore
+		\IF{$CompoundStmt$}
+			\IF{$Stmt IF$}
+				\STATE Adiciona o Escopo do IF e sua condição na arvore
+				\STATE Fecha a condição e chama todos os DeclList e FuncList dentro do if atual.
+				\IF{$else$ != NULL}
+					\STATE Fecha o escopo do if com a escolha não deterministica.
+					\STATE Entra no else e chama todos os DeclList e FuncList do else atual.
+				\ELSE
+					\STATE Termina o escopo do If também com escolha não deterministica.
+				\ENDIF
+			\ENDIF
+			\IF{$StmtAssign$}
+				\STATE Adiciona o Identifier atual na arvore
+				\STATE Adiciona a expressão
+			\ENDIF
+			\IF{$StmtCall$}
+				\STATE Coloca o Identifier da função que refere a um programa ou Escreve a Arvore do programa separado e depois volta pra arvore atual.					
+			\ENDIF
+			\IF{$StmtReturn$}
+				\STATE Adiciona na arvore a string "Return" e logo após a Expressão que retorna(se a possuir);
+			\ENDIF
+			\IF{$StmtWhile$}
+				\IF{$doWhile$}
+					\STATE Adicionar o que está dentro do escopo do do while atual
+					\STATE A condição é adicionada
+					\STATE Fecha o escopo do doWhile
+				\ELSE
+					\STATE A condição é adicionada
+					\STATE Adicionar o que está dentro do escopo do while atual
+					\STATE Fecha o escopo do While
+				\ENDIF
+				\STATE Adiciona a negação do escopo de condição do while.
+			\ENDIF
+			\IF{$StmtFor$}
+				\STATE Adiciona o (Declaration + Assign $|$ Assign)
+				\STATE Adiciona a condição do for
+				\STATE Adiciona na arvore tudo o que tem dentro do escopo do for atual.
+				\STATE Adiciona o campo "inc" do StmtFor que equivale a classe Program.
+				\STATE Adiciona a negação do escopo da condição do for
+			\ENDIF
+			\IF{$Cstmt$}
+				\STATE Embora importante na linguagem C, é ignorado quando se trata da inserção da arvore do PDL.
+			\ENDIF
+		\ENDIF
+	\ENDIF
+	\IF{$FuncList$}
+			\STATE Chama recursivamente FuncList.
+	\ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+\vspace{-50mm}
+
+\end{document}

@@ -1,0 +1,16 @@
+int main () 
+{
+    int result;
+	
+	result = 0;	
+
+    if (result > 0) 
+    {  
+		result = 1;
+    } else {
+		result  = 2;
+		result = 32;
+    }
+    return result; 
+}
+
