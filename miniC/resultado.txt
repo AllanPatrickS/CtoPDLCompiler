@@ -1,1 +1,1 @@
- (int i;int j;i = 1;j = 69;return 0)
+ (int result;result = 0;( (result)? ;result = 1 )U(¬(result)? ;result = 2;result = 32);return result)

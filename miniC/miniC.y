@@ -11,7 +11,7 @@
 struct PROGRAM *head;
 FILE *fp;   //for AST
 FILE *fp2;  //for symboltable 
-void yyerror(char* text) {
+void yyerror(char const*text){
 
     fprintf(stderr, "%s\n", text);
 }
@@ -68,6 +68,8 @@ void lyyerror(YYLTYPE t, char *s, ...)
 %right ELSE then;
 
 %type <type> Type
+
+%define parse.error verbose
 
 %type <ptr_program> Program
 %type <ptr_declaration> Declaration DeclList
@@ -378,7 +380,7 @@ Expr: MINUS Expr  {
     }
     | MathRel Eqltop Expr {
         struct EQLTOP *eqltop;
-        eqltop = $2;
+        eqltop = $2; 
         eqltop->lhs=$1;
         eqltop->rhs=$3;
 
@@ -387,12 +389,12 @@ Expr: MINUS Expr  {
         expr->expression.eqltop_ = eqltop;
         $$ = expr;
     }
-	| MathRel {
-	    struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+   	| MathRel {
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eMathRel;  
-        expr->expression.mathrel_ = $1;
+        expr->expression.mathrel_ = $1; 
         $$ = expr;
-	}
+    }   
     | Call {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eCallExpr;  
@@ -587,6 +589,7 @@ If_s: IF '(' Expr ')' Stmt %prec then{
       }
       ;
 %%
+
 void doProcess();
 int main(int argc, char* argv[]) {
     //헤드 초기화, 만일 토큰이 없다면 dfs(), bfs() 를 작동하지 않게 함.
@@ -599,13 +602,13 @@ int main(int argc, char* argv[]) {
     if(!yyparse())
         doProcess();
     fprintf(fp, "\n");
-    pclose(fp);
+	pclose(fp);
     pclose(fp2);
-    return 0;
+	return 0;
 }
 void doProcess() {
     //TODO
-    /*if(head == NULL)
+    if(head == NULL)
         exit(1);
     //make global node
     scopeHead = newScope(sGLOBAL, NULL);
@@ -615,5 +618,5 @@ void doProcess() {
     if(head->func != NULL)
         visitFunction(head->func);
 	BuildTree(head);
-	*/
+	
 }
