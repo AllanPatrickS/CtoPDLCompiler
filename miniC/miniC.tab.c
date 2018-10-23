@@ -76,7 +76,7 @@
 struct PROGRAM *head;
 FILE *fp;   //for AST
 FILE *fp2;  //for symboltable 
-void yyerror(char* text) {
+void yyerror(char const*text){
 
     fprintf(stderr, "%s\n", text);
 }
@@ -108,7 +108,7 @@ void lyyerror(YYLTYPE t, char *s, ...)
 # undef YYERROR_VERBOSE
 # define YYERROR_VERBOSE 1
 #else
-# define YYERROR_VERBOSE 0
+# define YYERROR_VERBOSE 1
 #endif
 
 /* In a future release of Bison, this section will be replaced
@@ -509,18 +509,18 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   100,   100,   107,   114,   122,   125,   132,   135,   142,
-     149,   152,   159,   166,   174,   180,   186,   193,   202,   211,
-     212,   216,   227,   233,   239,   246,   252,   259,   265,   271,
-     277,   283,   289,   295,   301,   307,   311,   318,   326,   334,
-     340,   347,   348,   355,   362,   365,   369,   379,   390,   396,
-     402,   410,   421,   428,   439,   446,   457,   464,   469,   475,
-     482,   488,   495,   500,   506,   511,   517,   522,   527,   532,
-     538,   543,   549,   556,   564,   574,   581
+       0,   102,   102,   109,   116,   124,   127,   134,   137,   144,
+     151,   154,   161,   168,   176,   182,   188,   195,   204,   213,
+     214,   218,   229,   235,   241,   248,   254,   261,   267,   273,
+     279,   285,   291,   297,   303,   309,   313,   320,   328,   336,
+     342,   349,   350,   357,   364,   367,   371,   381,   392,   398,
+     404,   412,   423,   430,   441,   448,   459,   466,   471,   477,
+     484,   490,   497,   502,   508,   513,   519,   524,   529,   534,
+     540,   545,   551,   558,   566,   576,   583
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1393,7 +1393,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 100 "miniC.y" /* yacc.c:1646  */
+#line 102 "miniC.y" /* yacc.c:1646  */
     {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->decl = (yyvsp[-1].ptr_declaration);
@@ -1405,7 +1405,7 @@ yyreduce:
     break;
 
   case 3:
-#line 107 "miniC.y" /* yacc.c:1646  */
+#line 109 "miniC.y" /* yacc.c:1646  */
     {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->decl = (yyvsp[0].ptr_declaration);
@@ -1417,7 +1417,7 @@ yyreduce:
     break;
 
   case 4:
-#line 114 "miniC.y" /* yacc.c:1646  */
+#line 116 "miniC.y" /* yacc.c:1646  */
     {
             struct PROGRAM *prog = (struct PROGRAM*) malloc (sizeof (struct PROGRAM));
             prog->decl = NULL;
@@ -1429,7 +1429,7 @@ yyreduce:
     break;
 
   case 5:
-#line 122 "miniC.y" /* yacc.c:1646  */
+#line 124 "miniC.y" /* yacc.c:1646  */
     {
             (yyval.ptr_declaration) = (yyvsp[0].ptr_declaration);
         }
@@ -1437,7 +1437,7 @@ yyreduce:
     break;
 
   case 6:
-#line 125 "miniC.y" /* yacc.c:1646  */
+#line 127 "miniC.y" /* yacc.c:1646  */
     {
             struct DECLARATION *decl;
             decl = (yyvsp[0].ptr_declaration);
@@ -1448,7 +1448,7 @@ yyreduce:
     break;
 
   case 7:
-#line 132 "miniC.y" /* yacc.c:1646  */
+#line 134 "miniC.y" /* yacc.c:1646  */
     {
             (yyval.ptr_function) = (yyvsp[0].ptr_function);
         }
@@ -1456,7 +1456,7 @@ yyreduce:
     break;
 
   case 8:
-#line 135 "miniC.y" /* yacc.c:1646  */
+#line 137 "miniC.y" /* yacc.c:1646  */
     {
             struct FUNCTION *func;
             func = (yyvsp[0].ptr_function);
@@ -1467,7 +1467,7 @@ yyreduce:
     break;
 
   case 9:
-#line 142 "miniC.y" /* yacc.c:1646  */
+#line 144 "miniC.y" /* yacc.c:1646  */
     {
                 struct DECLARATION *decl = (struct DECLARATION*) malloc (sizeof (struct DECLARATION));
                 decl->t = (yyvsp[-2].type);
@@ -1478,7 +1478,7 @@ yyreduce:
     break;
 
   case 10:
-#line 149 "miniC.y" /* yacc.c:1646  */
+#line 151 "miniC.y" /* yacc.c:1646  */
     {
             (yyval.ptr_identifier) = (yyvsp[0].ptr_identifier);
         }
@@ -1486,7 +1486,7 @@ yyreduce:
     break;
 
   case 11:
-#line 152 "miniC.y" /* yacc.c:1646  */
+#line 154 "miniC.y" /* yacc.c:1646  */
     {
             struct IDENTIFIER *iden;
             iden = (yyvsp[0].ptr_identifier);
@@ -1497,7 +1497,7 @@ yyreduce:
     break;
 
   case 12:
-#line 159 "miniC.y" /* yacc.c:1646  */
+#line 161 "miniC.y" /* yacc.c:1646  */
     {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = (yyvsp[0].id);
@@ -1509,7 +1509,7 @@ yyreduce:
     break;
 
   case 13:
-#line 166 "miniC.y" /* yacc.c:1646  */
+#line 168 "miniC.y" /* yacc.c:1646  */
     {
             struct IDENTIFIER *iden = (struct IDENTIFIER*) malloc (sizeof (struct IDENTIFIER));
             iden->ID = (yyvsp[-3].id);
@@ -1521,7 +1521,7 @@ yyreduce:
     break;
 
   case 14:
-#line 174 "miniC.y" /* yacc.c:1646  */
+#line 176 "miniC.y" /* yacc.c:1646  */
     {
             struct PARAMETER *param;
             param = (yyvsp[0].ptr_parameter);
@@ -1532,7 +1532,7 @@ yyreduce:
     break;
 
   case 15:
-#line 180 "miniC.y" /* yacc.c:1646  */
+#line 182 "miniC.y" /* yacc.c:1646  */
     {
             struct PARAMETER *param;
             param = (yyvsp[0].ptr_parameter);
@@ -1543,7 +1543,7 @@ yyreduce:
     break;
 
   case 16:
-#line 186 "miniC.y" /* yacc.c:1646  */
+#line 188 "miniC.y" /* yacc.c:1646  */
     {
             struct PARAMETER *param = (struct PARAMETER*) malloc (sizeof (struct PARAMETER));
             param->t = (yyvsp[-1].type);
@@ -1555,7 +1555,7 @@ yyreduce:
     break;
 
   case 17:
-#line 193 "miniC.y" /* yacc.c:1646  */
+#line 195 "miniC.y" /* yacc.c:1646  */
     {
             struct FUNCTION *func = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
             func->t = (yyvsp[-4].type);
@@ -1569,7 +1569,7 @@ yyreduce:
     break;
 
   case 18:
-#line 202 "miniC.y" /* yacc.c:1646  */
+#line 204 "miniC.y" /* yacc.c:1646  */
     {
         struct FUNCTION *func = (struct FUNCTION*) malloc (sizeof (struct FUNCTION));
         func->t = (yyvsp[-5].type);
@@ -1582,19 +1582,19 @@ yyreduce:
     break;
 
   case 19:
-#line 211 "miniC.y" /* yacc.c:1646  */
+#line 213 "miniC.y" /* yacc.c:1646  */
     { (yyval.type) = eInt;}
 #line 1588 "miniC.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 212 "miniC.y" /* yacc.c:1646  */
+#line 214 "miniC.y" /* yacc.c:1646  */
     { (yyval.type) = eFloat;}
 #line 1594 "miniC.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 216 "miniC.y" /* yacc.c:1646  */
+#line 218 "miniC.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
                 comp->decl = NULL;
@@ -1610,7 +1610,7 @@ yyreduce:
     break;
 
   case 22:
-#line 227 "miniC.y" /* yacc.c:1646  */
+#line 229 "miniC.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
                 comp->decl = NULL;
@@ -1621,7 +1621,7 @@ yyreduce:
     break;
 
   case 23:
-#line 233 "miniC.y" /* yacc.c:1646  */
+#line 235 "miniC.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
                 comp->decl = (yyvsp[-2].ptr_declaration);
@@ -1632,7 +1632,7 @@ yyreduce:
     break;
 
   case 24:
-#line 239 "miniC.y" /* yacc.c:1646  */
+#line 241 "miniC.y" /* yacc.c:1646  */
     {
                 struct COMPOUNDSTMT *comp = (struct COMPOUNDSTMT*) malloc (sizeof (struct COMPOUNDSTMT));
                 comp->decl = (yyvsp[-1].ptr_declaration);
@@ -1643,7 +1643,7 @@ yyreduce:
     break;
 
   case 25:
-#line 246 "miniC.y" /* yacc.c:1646  */
+#line 248 "miniC.y" /* yacc.c:1646  */
     {
             struct STMT *stmt;
             stmt = (yyvsp[0].ptr_stmt);
@@ -1654,7 +1654,7 @@ yyreduce:
     break;
 
   case 26:
-#line 252 "miniC.y" /* yacc.c:1646  */
+#line 254 "miniC.y" /* yacc.c:1646  */
     {
             struct STMT *stmt;
             stmt = (yyvsp[0].ptr_stmt);
@@ -1665,7 +1665,7 @@ yyreduce:
     break;
 
   case 27:
-#line 259 "miniC.y" /* yacc.c:1646  */
+#line 261 "miniC.y" /* yacc.c:1646  */
     { 
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eAssign;
@@ -1676,7 +1676,7 @@ yyreduce:
     break;
 
   case 28:
-#line 265 "miniC.y" /* yacc.c:1646  */
+#line 267 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eCall;
@@ -1687,7 +1687,7 @@ yyreduce:
     break;
 
   case 29:
-#line 271 "miniC.y" /* yacc.c:1646  */
+#line 273 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eRet;
@@ -1698,7 +1698,7 @@ yyreduce:
     break;
 
   case 30:
-#line 277 "miniC.y" /* yacc.c:1646  */
+#line 279 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eWhile;
@@ -1709,7 +1709,7 @@ yyreduce:
     break;
 
   case 31:
-#line 283 "miniC.y" /* yacc.c:1646  */
+#line 285 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eFor;
@@ -1720,7 +1720,7 @@ yyreduce:
     break;
 
   case 32:
-#line 289 "miniC.y" /* yacc.c:1646  */
+#line 291 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eIf;
@@ -1731,7 +1731,7 @@ yyreduce:
     break;
 
   case 33:
-#line 295 "miniC.y" /* yacc.c:1646  */
+#line 297 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eCompound;
@@ -1742,7 +1742,7 @@ yyreduce:
     break;
 
   case 34:
-#line 301 "miniC.y" /* yacc.c:1646  */
+#line 303 "miniC.y" /* yacc.c:1646  */
     {
         struct STMT *stmt = (struct STMT*) malloc (sizeof (struct STMT));
         stmt->s = eSemi;
@@ -1752,7 +1752,7 @@ yyreduce:
     break;
 
   case 35:
-#line 307 "miniC.y" /* yacc.c:1646  */
+#line 309 "miniC.y" /* yacc.c:1646  */
     { 
             (yyval.ptr_assign) = (yyvsp[-1].ptr_assign);
           }
@@ -1760,7 +1760,7 @@ yyreduce:
     break;
 
   case 36:
-#line 311 "miniC.y" /* yacc.c:1646  */
+#line 313 "miniC.y" /* yacc.c:1646  */
     {
             struct ASSIGN *assign = (struct ASSIGN*) malloc (sizeof (struct ASSIGN));
             assign->ID = (yyvsp[-2].id);
@@ -1772,7 +1772,7 @@ yyreduce:
     break;
 
   case 37:
-#line 318 "miniC.y" /* yacc.c:1646  */
+#line 320 "miniC.y" /* yacc.c:1646  */
     {
             struct ASSIGN *assign = (struct ASSIGN*) malloc (sizeof (struct ASSIGN));
             assign->ID = (yyvsp[-5].id);
@@ -1784,7 +1784,7 @@ yyreduce:
     break;
 
   case 38:
-#line 326 "miniC.y" /* yacc.c:1646  */
+#line 328 "miniC.y" /* yacc.c:1646  */
     {
             (yyval.ptr_call) = (yyvsp[-1].ptr_call);
         }
@@ -1792,7 +1792,7 @@ yyreduce:
     break;
 
   case 39:
-#line 334 "miniC.y" /* yacc.c:1646  */
+#line 336 "miniC.y" /* yacc.c:1646  */
     {
         struct CALL *call = (struct CALL*) malloc (sizeof (struct CALL));
         call->ID = (yyvsp[-2].id);
@@ -1803,7 +1803,7 @@ yyreduce:
     break;
 
   case 40:
-#line 340 "miniC.y" /* yacc.c:1646  */
+#line 342 "miniC.y" /* yacc.c:1646  */
     {
         struct CALL *call = (struct CALL*) malloc (sizeof (struct CALL));
         call->ID = (yyvsp[-3].id);
@@ -1814,13 +1814,13 @@ yyreduce:
     break;
 
   case 41:
-#line 347 "miniC.y" /* yacc.c:1646  */
+#line 349 "miniC.y" /* yacc.c:1646  */
     { (yyval.ptr_arg) = (yyvsp[0].ptr_arg);}
 #line 1820 "miniC.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 348 "miniC.y" /* yacc.c:1646  */
+#line 350 "miniC.y" /* yacc.c:1646  */
     {
             struct ARG *arg;
             arg = (yyvsp[0].ptr_arg);
@@ -1831,7 +1831,7 @@ yyreduce:
     break;
 
   case 43:
-#line 355 "miniC.y" /* yacc.c:1646  */
+#line 357 "miniC.y" /* yacc.c:1646  */
     {
     struct ARG *arg = (struct ARG*) malloc (sizeof (struct ARG));
     arg->expr = (yyvsp[0].ptr_expr);
@@ -1842,7 +1842,7 @@ yyreduce:
     break;
 
   case 44:
-#line 362 "miniC.y" /* yacc.c:1646  */
+#line 364 "miniC.y" /* yacc.c:1646  */
     {
         (yyval.ptr_expr) = NULL;
         }
@@ -1850,7 +1850,7 @@ yyreduce:
     break;
 
   case 45:
-#line 365 "miniC.y" /* yacc.c:1646  */
+#line 367 "miniC.y" /* yacc.c:1646  */
     {
         (yyval.ptr_expr) = (yyvsp[-1].ptr_expr);
        }
@@ -1858,7 +1858,7 @@ yyreduce:
     break;
 
   case 46:
-#line 369 "miniC.y" /* yacc.c:1646  */
+#line 371 "miniC.y" /* yacc.c:1646  */
     {
         struct UNOP *unop = (struct UNOP*) malloc (sizeof (struct UNOP));
         unop->u = eNegative;
@@ -1873,10 +1873,10 @@ yyreduce:
     break;
 
   case 47:
-#line 379 "miniC.y" /* yacc.c:1646  */
+#line 381 "miniC.y" /* yacc.c:1646  */
     {
         struct EQLTOP *eqltop;
-        eqltop = (yyvsp[-1].ptr_eqltop);
+        eqltop = (yyvsp[-1].ptr_eqltop); 
         eqltop->lhs=(yyvsp[-2].ptr_math_rel);
         eqltop->rhs=(yyvsp[0].ptr_expr);
 
@@ -1889,18 +1889,18 @@ yyreduce:
     break;
 
   case 48:
-#line 390 "miniC.y" /* yacc.c:1646  */
+#line 392 "miniC.y" /* yacc.c:1646  */
     {
-	    struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eMathRel;  
-        expr->expression.mathrel_ = (yyvsp[0].ptr_math_rel);
+        expr->expression.mathrel_ = (yyvsp[0].ptr_math_rel); 
         (yyval.ptr_expr) = expr;
-	}
+    }
 #line 1900 "miniC.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 396 "miniC.y" /* yacc.c:1646  */
+#line 398 "miniC.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eCallExpr;  
@@ -1911,7 +1911,7 @@ yyreduce:
     break;
 
   case 50:
-#line 402 "miniC.y" /* yacc.c:1646  */
+#line 404 "miniC.y" /* yacc.c:1646  */
     {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eId;  
@@ -1922,7 +1922,7 @@ yyreduce:
     break;
 
   case 51:
-#line 410 "miniC.y" /* yacc.c:1646  */
+#line 412 "miniC.y" /* yacc.c:1646  */
     {
         struct RELAOP *relaop;
         relaop = (yyvsp[-1].ptr_relaop);
@@ -1938,7 +1938,7 @@ yyreduce:
     break;
 
   case 52:
-#line 421 "miniC.y" /* yacc.c:1646  */
+#line 423 "miniC.y" /* yacc.c:1646  */
     {
 	    struct MATHREL *math = (struct MATHREL*) malloc (sizeof (struct MATHREL));
         math->r = eMathEql;  
@@ -1949,7 +1949,7 @@ yyreduce:
     break;
 
   case 53:
-#line 428 "miniC.y" /* yacc.c:1646  */
+#line 430 "miniC.y" /* yacc.c:1646  */
     {
         struct ADDIOP *addiop;
         addiop = (yyvsp[-1].ptr_addiop);
@@ -1965,7 +1965,7 @@ yyreduce:
     break;
 
   case 54:
-#line 439 "miniC.y" /* yacc.c:1646  */
+#line 441 "miniC.y" /* yacc.c:1646  */
     {
 	    struct MATHEQL *math = (struct MATHEQL*) malloc (sizeof (struct MATHEQL));
         math->e = eTerm;  
@@ -1976,7 +1976,7 @@ yyreduce:
     break;
 
   case 55:
-#line 446 "miniC.y" /* yacc.c:1646  */
+#line 448 "miniC.y" /* yacc.c:1646  */
     {
 		struct MULTOP *multop;
         multop = (yyvsp[-1].ptr_multop);
@@ -1992,7 +1992,7 @@ yyreduce:
     break;
 
   case 56:
-#line 457 "miniC.y" /* yacc.c:1646  */
+#line 459 "miniC.y" /* yacc.c:1646  */
     {
 		struct TERM *term = (struct TERM*) malloc (sizeof (struct TERM));
 		term->t = eFactor;
@@ -2003,7 +2003,7 @@ yyreduce:
     break;
 
   case 57:
-#line 464 "miniC.y" /* yacc.c:1646  */
+#line 466 "miniC.y" /* yacc.c:1646  */
     {
 		struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
         factor->f = eExpre;  
@@ -2013,7 +2013,7 @@ yyreduce:
     break;
 
   case 58:
-#line 469 "miniC.y" /* yacc.c:1646  */
+#line 471 "miniC.y" /* yacc.c:1646  */
     {
 		struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
         factor->f = eFloatnum;  
@@ -2024,7 +2024,7 @@ yyreduce:
     break;
 
   case 59:
-#line 475 "miniC.y" /* yacc.c:1646  */
+#line 477 "miniC.y" /* yacc.c:1646  */
     {
 	    struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
         factor->f = eIntnum;  
@@ -2035,7 +2035,7 @@ yyreduce:
     break;
 
   case 60:
-#line 482 "miniC.y" /* yacc.c:1646  */
+#line 484 "miniC.y" /* yacc.c:1646  */
     {
         struct ID_S *id_s = (struct ID_S*)malloc(sizeof (struct ID_S));
         id_s->ID = (yyvsp[0].id);
@@ -2046,7 +2046,7 @@ yyreduce:
     break;
 
   case 61:
-#line 488 "miniC.y" /* yacc.c:1646  */
+#line 490 "miniC.y" /* yacc.c:1646  */
     {
         struct ID_S *id_s = (struct ID_S*)malloc(sizeof (struct ID_S));
         id_s->ID = (yyvsp[-3].id);
@@ -2057,7 +2057,7 @@ yyreduce:
     break;
 
   case 62:
-#line 495 "miniC.y" /* yacc.c:1646  */
+#line 497 "miniC.y" /* yacc.c:1646  */
     {
          struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
          addiop->a = eMinus;
@@ -2067,7 +2067,7 @@ yyreduce:
     break;
 
   case 63:
-#line 500 "miniC.y" /* yacc.c:1646  */
+#line 502 "miniC.y" /* yacc.c:1646  */
     { 
         struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
         addiop->a = ePlus;
@@ -2077,7 +2077,7 @@ yyreduce:
     break;
 
   case 64:
-#line 506 "miniC.y" /* yacc.c:1646  */
+#line 508 "miniC.y" /* yacc.c:1646  */
     {
          struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
          multop->m = eMult;
@@ -2087,7 +2087,7 @@ yyreduce:
     break;
 
   case 65:
-#line 511 "miniC.y" /* yacc.c:1646  */
+#line 513 "miniC.y" /* yacc.c:1646  */
     {
          struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
          multop->m = eDiv;
@@ -2097,7 +2097,7 @@ yyreduce:
     break;
 
   case 66:
-#line 517 "miniC.y" /* yacc.c:1646  */
+#line 519 "miniC.y" /* yacc.c:1646  */
     {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
          relaop->r = eLE;
@@ -2107,7 +2107,7 @@ yyreduce:
     break;
 
   case 67:
-#line 522 "miniC.y" /* yacc.c:1646  */
+#line 524 "miniC.y" /* yacc.c:1646  */
     {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
          relaop->r = eGE;
@@ -2117,7 +2117,7 @@ yyreduce:
     break;
 
   case 68:
-#line 527 "miniC.y" /* yacc.c:1646  */
+#line 529 "miniC.y" /* yacc.c:1646  */
     {
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
          relaop->r = eGT;
@@ -2127,7 +2127,7 @@ yyreduce:
     break;
 
   case 69:
-#line 532 "miniC.y" /* yacc.c:1646  */
+#line 534 "miniC.y" /* yacc.c:1646  */
     { 
          struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
          relaop->r = eLT;
@@ -2137,7 +2137,7 @@ yyreduce:
     break;
 
   case 70:
-#line 538 "miniC.y" /* yacc.c:1646  */
+#line 540 "miniC.y" /* yacc.c:1646  */
     {
          struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
          eqltop->e = eEQ;
@@ -2147,7 +2147,7 @@ yyreduce:
     break;
 
   case 71:
-#line 543 "miniC.y" /* yacc.c:1646  */
+#line 545 "miniC.y" /* yacc.c:1646  */
     { 
          struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
          eqltop->e = eNE;
@@ -2157,7 +2157,7 @@ yyreduce:
     break;
 
   case 72:
-#line 549 "miniC.y" /* yacc.c:1646  */
+#line 551 "miniC.y" /* yacc.c:1646  */
     {
            struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
            while_s->do_while = false;
@@ -2169,7 +2169,7 @@ yyreduce:
     break;
 
   case 73:
-#line 556 "miniC.y" /* yacc.c:1646  */
+#line 558 "miniC.y" /* yacc.c:1646  */
     {
            struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
            while_s->do_while = true;
@@ -2181,7 +2181,7 @@ yyreduce:
     break;
 
   case 74:
-#line 564 "miniC.y" /* yacc.c:1646  */
+#line 566 "miniC.y" /* yacc.c:1646  */
     {
            struct FOR_S *for_s = (struct FOR_S*) malloc (sizeof(struct FOR_S));
            for_s->init = (yyvsp[-6].ptr_assign);
@@ -2194,7 +2194,7 @@ yyreduce:
     break;
 
   case 75:
-#line 574 "miniC.y" /* yacc.c:1646  */
+#line 576 "miniC.y" /* yacc.c:1646  */
     {
        struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
        if_s->cond=(yyvsp[-2].ptr_expr);
@@ -2206,7 +2206,7 @@ yyreduce:
     break;
 
   case 76:
-#line 581 "miniC.y" /* yacc.c:1646  */
+#line 583 "miniC.y" /* yacc.c:1646  */
     {
        struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
        if_s->cond=(yyvsp[-4].ptr_expr);
@@ -2446,7 +2446,8 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 589 "miniC.y" /* yacc.c:1906  */
+#line 591 "miniC.y" /* yacc.c:1906  */
+
 
 void doProcess();
 int main(int argc, char* argv[]) {
@@ -2460,13 +2461,13 @@ int main(int argc, char* argv[]) {
     if(!yyparse())
         doProcess();
     fprintf(fp, "\n");
-    pclose(fp);
+	pclose(fp);
     pclose(fp2);
-    return 0;
+	return 0;
 }
 void doProcess() {
     //TODO
-    /*if(head == NULL)
+    if(head == NULL)
         exit(1);
     //make global node
     scopeHead = newScope(sGLOBAL, NULL);
@@ -2476,5 +2477,5 @@ void doProcess() {
     if(head->func != NULL)
         visitFunction(head->func);
 	BuildTree(head);
-	*/
+	
 }

@@ -112,7 +112,7 @@ void visitDeclaration2   (struct DECLARATION* decl) {
 	//insert(aux, "child", ";");
 }
 void visitFunction2      (struct FUNCTION* func) {
-    if(func->prev != NULL) {
+	 if(func->prev != NULL) {
         visitFunction2(func->prev);
     }
     //for symboltable
@@ -344,6 +344,7 @@ void visitArg2           (struct ARG* arg) {
     }   
     visitExpr2(arg->expr);
 }
+
 void visitExpr2          (struct EXPR* expr) {
     switch(expr->e) {
         case eUnop:
@@ -352,7 +353,7 @@ void visitExpr2          (struct EXPR* expr) {
             visitExpr2(expr->expression.unop_->expr);
             break;
         case eEqlt:
-            visitMathRel2(expr->expression.eqltop_->lhs);
+           // visitMathRel2(expr->expression.eqltop_->lhs);
             if(expr->expression.eqltop_->e == eEQ) {
                 //printf(" == ");
 				insert(aux, "child", " == ");
@@ -362,6 +363,7 @@ void visitExpr2          (struct EXPR* expr) {
             }
             visitExpr2(expr->expression.eqltop_->rhs);
             break;
+		
 		case eMathRel:
 			visitMathRel2(expr->expression.mathrel_);
 			break;
@@ -374,6 +376,7 @@ void visitExpr2          (struct EXPR* expr) {
         
     }
 }
+
 
 void visitMathRel2(struct MATHREL* math){
 	switch(math->r) {
@@ -447,13 +450,13 @@ void visitFactor2(struct FACTOR* factor){
             break;
 		case eFloatnum:
 			if(numero != NULL){
-				snprintf(numero->num, 255*sizeof(char), "%d", (float)factor->fac.floatnum);
+				snprintf(numero->num, 255*sizeof(char), "%f", (float)factor->fac.floatnum);
             	insert(aux,"child", numero->num);
 				numero = numero->prox;
 			}else if(numero == NULL){
 				Numero* novo = (Numero*)malloc(sizeof(Numero));
 				numero = novo;
-				snprintf(numero->num, 255*sizeof(char), "%d", (float)factor->fac.floatnum);
+				snprintf(numero->num, 255*sizeof(char), "%f", (float)factor->fac.floatnum);
                 insert(aux,"child", numero->num);
                 numero = numero->prox;
 			}
