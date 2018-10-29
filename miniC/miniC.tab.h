@@ -69,7 +69,7 @@ extern int yydebug;
     DQUOT_T = 279,
     SQUOT_T = 280,
     AMP_T = 281,
-    then = 282
+    LOWER_THAN_ELSE = 282
   };
 #endif
 
@@ -78,38 +78,30 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 33 "miniC.y" /* yacc.c:1909  */
+#line 32 "miniC.y" /* yacc.c:1909  */
 
-    struct PROGRAM       				*ptr_program;
-    struct DECLARATION   				*ptr_declaration;
-    struct IDENTIFIER    				*ptr_identifier;
-    struct FUNCTION      				*ptr_function;
-    struct PARAMETER     				*ptr_parameter;
-    struct COMPOUNDSTMT  				*ptr_compoundstmt;
-    struct STMT          				*ptr_stmt;
-    struct ASSIGN        				*ptr_assign;
-    struct CALL          				*ptr_call;
-    struct ARG           				*ptr_arg;
-    struct WHILE_S       				*ptr_while_s;
-    struct FOR_S         				*ptr_for_s;
-    struct IF_S         				*ptr_if_s;
-    struct ID_S          				*ptr_id_s;
-    struct EXPR          				*ptr_expr;
-    struct ADDIOP        				*ptr_addiop;
-    struct MULTOP        				*ptr_multop;
-    struct RELAOP        				*ptr_relaop;
-    struct EQLTOP        				*ptr_eqltop;
-	struct FACTOR		 				*ptr_factor;
-	struct TERM			 				*ptr_term;
-	struct MATHEQL		 				*ptr_math_eql;
-	struct MATHREL		 				*ptr_math_rel;
+    struct PROGRAM       *ptr_program;
+    struct DECLARATION   *ptr_declaration;
+    struct IDENTIFIER    *ptr_identifier;
+    struct FUNCTION      *ptr_function;
+    struct PARAMETER     *ptr_parameter;
+    struct COMPOUNDSTMT  *ptr_compoundstmt;
+    struct STMT          *ptr_stmt;
+    struct ASSIGN        *ptr_assign;
+    struct CALL          *ptr_call;
+    struct ARG           *ptr_arg;
+    struct WHILE_S       *ptr_while_s;
+    struct FOR_S         *ptr_for_s;
+    struct IF_S          *ptr_if_s;
+    struct ID_S          *ptr_id_s;
+    struct EXPR          *ptr_expr;
     Type_e type;
     //TODO int, float to char*
     int intnum;
     float floatnum;
     char* id;
 
-#line 113 "miniC.tab.h" /* yacc.c:1909  */
+#line 105 "miniC.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

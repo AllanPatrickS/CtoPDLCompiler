@@ -352,131 +352,101 @@ void visitExpr2          (struct EXPR* expr) {
 			insert(aux, "child", "-");
             visitExpr2(expr->expression.unop_->expr);
             break;
-        case eEqlt:
-           // visitMathRel2(expr->expression.eqltop_->lhs);
-            if(expr->expression.eqltop_->e == eEQ) {
-                //printf(" == ");
-				insert(aux, "child", " == ");
-            } else {
-                //printf(" != " );
-				insert(aux, "child", " != ");
-            }
-            visitExpr2(expr->expression.eqltop_->rhs);
+			
+		case eAddi:
+            visitExpr2(expr->expression.addiop_->lhs);
+            if(expr->expression.addiop_->a == ePlus)
+                insert(aux, "child", " + ");
+            else
+                insert(aux, "child", " - ");
+            visitExpr2(expr->expression.addiop_->rhs);
             break;
 		
-		case eMathRel:
-			visitMathRel2(expr->expression.mathrel_);
-			break;
-        case eCallExpr:
-            visitCallStmt2(expr->expression.call_);
-            break;
-        case eId:
-            visitId_s2(expr->expression.ID_);
-            break;
-        
-    }
-}
-
-
-void visitMathRel2(struct MATHREL* math){
-	switch(math->r) {
-        	case eRela:
-				visitMathEql2(math->math_rel.relaop_->lhs);
-				switch(math->math_rel.relaop_->r) {
-					case eLT:
-						insert(aux, "child", " < ");
-						break;
-
-					case eGT:
-						insert(aux, "child", " > ");
-						break;
-
-					case eLE:
-						insert(aux, "child", " <= ");
-
-						break;
-
-					case eGE:
-						insert(aux, "child", " >= ");
-						break;
-				}
-				visitMathRel2(math->math_rel.relaop_->rhs);
-				break;
-			case eMathEql:
-				visitMathEql2(math->math_rel.MathEql_);
-				break;
-			
-    }
-}
-
-void visitMathEql2(struct MATHEQL* math){
-	switch(math->e) {
-        	case eAddi:
-				visitTerm2(math->math_eql.addiop_->lhs);
-				if(math->math_eql.addiop_->a == ePlus)
-					insert(aux, "child", " + ");
-				else
-					insert(aux, "child", " - ");
-				visitMathEql2(math->math_eql.addiop_->rhs);
-				break;
-			case eTerm:
-				visitTerm2(math->math_eql.term_);
-				break;
-    }
-}
-
-void visitTerm2 (struct TERM* term){
-	switch(term->t) {
-        case eMulti:
-            visitFactor2(term->ter.multop_->lhs);
-            if(term->ter.multop_->m == eMult)
+		case eMulti:
+            visitExpr2(expr->expression.multop_->lhs);
+            if(expr->expression.multop_->m == eMult)
                 insert(aux, "child", " * ");
             else
                 insert(aux, "child", " / ");
-            visitTerm2(term->ter.multop_->rhs);
+            visitExpr2(expr->expression.multop_->rhs);
             break;
-			case eFactor:
-				visitFactor2(term->ter.Facop_);
-				break;
-    }
-}
-	
-void visitFactor2(struct FACTOR* factor){
-	switch(factor->f) {
-		case eExpre:
+			
+		case eRela:
+            visitExpr2(expr->expression.relaop_->lhs);
+            switch(expr->expression.relaop_->r) {
+                case eLT:
+                    insert(aux, "child", " < ");
+                    break;
+
+                case eGT:
+                    insert(aux, "child", " > ");
+                    break;
+
+                case eLE:
+                    insert(aux, "child", " <= ");
+                    break;
+
+                case eGE:
+                    insert(aux, "child", " >= ");
+                    break;
+            }
+            visitExpr2(expr->expression.relaop_->rhs);
+            break;
+			
+		case eEqlt:
+            visitExpr2(expr->expression.eqltop_->lhs);
+            if(expr->expression.eqltop_->e == eEQ) {
+                insert(aux, "child", " == ");
+            } else {
+                insert(aux, "child", " != ");
+            }
+            visitExpr2(expr->expression.eqltop_->rhs);
+            break;
+			
+		case eCallExpr:
+            visitCallStmt2(expr->expression.call_);
+            break;
+			
+		case eExpr:
             insert(aux, "child", "(");
-            visitExpr2(factor->fac.bracket);
+            visitExpr2(expr->expression.bracket);
             insert(aux, "child", ")");
             break;
-		case eFloatnum:
-			if(numero != NULL){
-				snprintf(numero->num, 255*sizeof(char), "%f", (float)factor->fac.floatnum);
-            	insert(aux,"child", numero->num);
-				numero = numero->prox;
-			}else if(numero == NULL){
-				Numero* novo = (Numero*)malloc(sizeof(Numero));
-				numero = novo;
-				snprintf(numero->num, 255*sizeof(char), "%f", (float)factor->fac.floatnum);
-                insert(aux,"child", numero->num);
-                numero = numero->prox;
-			}
+			
+		case eId:
+            visitId_s2(expr->expression.ID_);
             break;
+			
 		case eIntnum:
 			if(numero != NULL){
             	//printf("%d", expr->expression.intnum);
-				snprintf(numero->num, 255*sizeof(char), "%d", (int)factor->fac.intnum);
+				snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
             	insert(aux, "child", numero->num);
 				numero = numero->prox;
 			}else if(numero == NULL){
 				Numero* novo = (Numero*)malloc(sizeof(Numero));
 				numero = novo;
-				snprintf(numero->num, 255*sizeof(char), "%d", (int)factor->fac.intnum);
+				snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
 				insert(aux, "child", numero->num);
 				numero = numero->prox;
 			} 
             break;
+
+		case eFloatnum:
+			if(numero != NULL){
+				snprintf(numero->num, 255*sizeof(char), "%f", (float)expr->expression.floatnum);
+            	insert(aux,"child", numero->num);
+				numero = numero->prox;
+			}else if(numero == NULL){
+				Numero* novo = (Numero*)malloc(sizeof(Numero));
+				numero = novo;
+				snprintf(numero->num, 255*sizeof(char), "%f", (float)expr->expression.floatnum);
+                insert(aux,"child", numero->num);
+                numero = numero->prox;
+			}
+            break;	
     }
-}		
+}	
 
 void visitWhile_s2       (struct WHILE_S* while_s) {
     if(while_s->do_while == true) {

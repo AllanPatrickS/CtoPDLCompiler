@@ -11,7 +11,7 @@
 struct PROGRAM *head;
 FILE *fp;   //for AST
 FILE *fp2;  //for symboltable 
-void yyerror(char const*text){
+void yyerror(char const* text) {
 
     fprintf(stderr, "%s\n", text);
 }
@@ -29,31 +29,22 @@ void lyyerror(YYLTYPE t, char *s, ...)
 */
 %}
 
-
 %union{
-    struct PROGRAM       				*ptr_program;
-    struct DECLARATION   				*ptr_declaration;
-    struct IDENTIFIER    				*ptr_identifier;
-    struct FUNCTION      				*ptr_function;
-    struct PARAMETER     				*ptr_parameter;
-    struct COMPOUNDSTMT  				*ptr_compoundstmt;
-    struct STMT          				*ptr_stmt;
-    struct ASSIGN        				*ptr_assign;
-    struct CALL          				*ptr_call;
-    struct ARG           				*ptr_arg;
-    struct WHILE_S       				*ptr_while_s;
-    struct FOR_S         				*ptr_for_s;
-    struct IF_S         				*ptr_if_s;
-    struct ID_S          				*ptr_id_s;
-    struct EXPR          				*ptr_expr;
-    struct ADDIOP        				*ptr_addiop;
-    struct MULTOP        				*ptr_multop;
-    struct RELAOP        				*ptr_relaop;
-    struct EQLTOP        				*ptr_eqltop;
-	struct FACTOR		 				*ptr_factor;
-	struct TERM			 				*ptr_term;
-	struct MATHEQL		 				*ptr_math_eql;
-	struct MATHREL		 				*ptr_math_rel;
+    struct PROGRAM       *ptr_program;
+    struct DECLARATION   *ptr_declaration;
+    struct IDENTIFIER    *ptr_identifier;
+    struct FUNCTION      *ptr_function;
+    struct PARAMETER     *ptr_parameter;
+    struct COMPOUNDSTMT  *ptr_compoundstmt;
+    struct STMT          *ptr_stmt;
+    struct ASSIGN        *ptr_assign;
+    struct CALL          *ptr_call;
+    struct ARG           *ptr_arg;
+    struct WHILE_S       *ptr_while_s;
+    struct FOR_S         *ptr_for_s;
+    struct IF_S          *ptr_if_s;
+    struct ID_S          *ptr_id_s;
+    struct EXPR          *ptr_expr;
     Type_e type;
     //TODO int, float to char*
     int intnum;
@@ -64,8 +55,6 @@ void lyyerror(YYLTYPE t, char *s, ...)
 %token <intnum>INTNUM <floatnum>FLOATNUM <id>ID
 %token INT FLOAT MINUS PLUS MULT DIV LE GE EQ NE GT LT
 %token IF ELSE FOR WHILE DO RETURN DQUOT_T SQUOT_T AMP_T 
-
-%right ELSE then;
 
 %type <type> Type
 
@@ -85,15 +74,11 @@ void lyyerror(YYLTYPE t, char *s, ...)
 %type <ptr_for_s> For_s
 %type <ptr_if_s> If_s
 %type <ptr_expr> Expr RetStmt
-%type <ptr_addiop> Addiop
-%type <ptr_multop> Multop
-%type <ptr_relaop> Relaop
-%type <ptr_eqltop> Eqltop
-%type <ptr_factor> FACTOR
-%type <ptr_term> TERM
-%type <ptr_id_s> Id_s
-%type <ptr_math_eql> MathEql
-%type <ptr_math_rel> MathRel;
+%type <ptr_id_s> Id_s;
+
+%left LOWER_THAN_ELSE
+%left ELSE
+%left MULT DIV MINUS PLUS LE GE GT LT EQ NE
 
 %start Program
 %%
@@ -368,7 +353,7 @@ RetStmt: RETURN ';' {
         $$ = $2;
        }
        ;
-Expr: MINUS Expr  {
+Expr: MINUS Expr{
         struct UNOP *unop = (struct UNOP*) malloc (sizeof (struct UNOP));
         unop->u = eNegative;
         unop->expr = $2;
@@ -378,9 +363,97 @@ Expr: MINUS Expr  {
         expr->expression.unop_ = unop;
         $$ = expr;
     }
-    | MathRel Eqltop Expr {
-        struct EQLTOP *eqltop;
-        eqltop = $2; 
+    | Expr MINUS Expr{
+        struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
+		addiop->a = eMinus;
+        addiop->lhs=$1;
+        addiop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eAddi;
+        expr->expression.addiop_ = addiop;
+        $$ = expr;
+    }
+	| Expr PLUS Expr{
+        struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
+		addiop->a = ePlus;
+        addiop->lhs=$1;
+        addiop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eAddi;
+        expr->expression.addiop_ = addiop;
+        $$ = expr;
+    }
+    | Expr MULT Expr{
+        struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
+        multop->m = eMult;
+        multop->lhs=$1;
+        multop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eMulti;   // eMult와 다름 
+        expr->expression.multop_ = multop;
+        $$ = expr;
+    }
+	| Expr DIV Expr{
+        struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
+        multop->m = eDiv;
+        multop->lhs=$1;
+        multop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eMulti;   // eMult와 다름 
+        expr->expression.multop_ = multop;
+        $$ = expr;
+    }
+    | Expr LE Expr{
+        struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
+        relaop->r = eLE;
+        relaop->lhs=$1;
+        relaop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eRela;  
+        expr->expression.relaop_ = relaop;
+        $$ = expr;
+    }
+	| Expr GE Expr{
+        struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
+        relaop->r = eGE;
+        relaop->lhs=$1;
+        relaop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eRela;  
+        expr->expression.relaop_ = relaop;
+        $$ = expr;
+    }
+	| Expr GT Expr{
+        struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
+        relaop->r = eGT;
+        relaop->lhs=$1;
+        relaop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eRela;  
+        expr->expression.relaop_ = relaop;
+        $$ = expr;
+    }
+	| Expr LT Expr{
+        struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
+        relaop->r = eLT;
+        relaop->lhs=$1;
+        relaop->rhs=$3;
+
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eRela;  
+        expr->expression.relaop_ = relaop;
+        $$ = expr;
+    }
+    | Expr EQ Expr {
+        struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
+        eqltop->e = eEQ;
         eqltop->lhs=$1;
         eqltop->rhs=$3;
 
@@ -389,98 +462,48 @@ Expr: MINUS Expr  {
         expr->expression.eqltop_ = eqltop;
         $$ = expr;
     }
-   	| MathRel {
+	| Expr NE Expr {
+        struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
+        eqltop->e = eNE;
+        eqltop->lhs=$1;
+        eqltop->rhs=$3;
+
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
-        expr->e = eMathRel;  
-        expr->expression.mathrel_ = $1; 
+        expr->e = eEqlt;  
+        expr->expression.eqltop_ = eqltop;
         $$ = expr;
-    }   
+    }
     | Call {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eCallExpr;  
         expr->expression.call_ = $1;
         $$ = expr;
-    }   
+    }
+    | INTNUM {
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eIntnum;  
+        expr->expression.intnum = $1;
+        $$ = expr;
+    }    
+    | FLOATNUM {
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eFloatnum;  
+        expr->expression.floatnum = $1;
+        $$ = expr;
+    }
     | Id_s {
         struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
         expr->e = eId;  
         expr->expression.ID_ = $1;
         $$ = expr;
     } 
-    ;
-	
-MathRel: MathEql Relaop MathRel {
-        struct RELAOP *relaop;
-        relaop = $2;
-        relaop->lhs=$1;
-        relaop->rhs=$3;
-
-        struct MATHREL *math = (struct MATHREL*) malloc (sizeof (struct MATHREL));
-        math->r = eRela;  
-        math->math_rel.relaop_ = relaop;
-        $$ = math;
+    | '(' Expr ')' {
+        struct EXPR *expr = (struct EXPR*) malloc (sizeof (struct EXPR));
+        expr->e = eExpr;  
+        expr->expression.bracket = $2;
+        $$ = expr;
     }
-	| MathEql {
-	    struct MATHREL *math = (struct MATHREL*) malloc (sizeof (struct MATHREL));
-        math->r = eMathEql;  
-        math->math_rel.MathEql_ = $1;
-        $$ = math;
-	}
-	;
-MathEql: TERM Addiop MathEql {
-        struct ADDIOP *addiop;
-        addiop = $2;
-        addiop->lhs=$1;
-        addiop->rhs=$3;
-
-        struct MATHEQL *math = (struct MATHEQL*) malloc (sizeof (struct MATHEQL));
-        math->e = eAddi;
-        math->math_eql.addiop_ = addiop;
-        $$ = math;
-    }
-	| TERM {
-	    struct MATHEQL *math = (struct MATHEQL*) malloc (sizeof (struct MATHEQL));
-        math->e = eTerm;  
-        math->math_eql.term_ = $1;
-        $$ = math;
-	}
     ;
-TERM: FACTOR Multop TERM {
-		struct MULTOP *multop;
-        multop = $2;
-        multop->lhs=$1;
-        multop->rhs=$3;
-
-        struct TERM *term = (struct TERM*) malloc (sizeof (struct TERM));
-        term->t = eMulti;   // eMult와 다름 
-        term->ter.multop_ = multop;
-        $$ = term;
-	}
-	| FACTOR {
-		struct TERM *term = (struct TERM*) malloc (sizeof (struct TERM));
-		term->t = eFactor;
-		term->ter.Facop_ = $1;
-		$$ = term;
-	}	
-	;
-FACTOR: '(' Expr ')' {
-		struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
-        factor->f = eExpre;  
-        factor->fac.bracket = $2;
-	}
-	| FLOATNUM {
-		struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
-        factor->f = eFloatnum;  
-        factor->fac.floatnum = $1;
-        $$ = factor;
-	}
-	| INTNUM {
-	    struct FACTOR *factor = (struct FACTOR*) malloc (sizeof (struct FACTOR));
-        factor->f = eIntnum;  
-        factor->fac.intnum = $1;
-        $$ = factor;
-	}
-	;	
 Id_s: ID {
         struct ID_S *id_s = (struct ID_S*)malloc(sizeof (struct ID_S));
         id_s->ID = $1;
@@ -494,60 +517,6 @@ Id_s: ID {
         $$ = id_s;
     }
     ;
-Addiop: MINUS {
-         struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-         addiop->a = eMinus;
-         $$ = addiop;
-      }
-      | PLUS { 
-        struct ADDIOP *addiop = (struct ADDIOP*) malloc (sizeof (struct ADDIOP));
-        addiop->a = ePlus;
-		$$ = addiop;
-      }
-      ;
-Multop: MULT {
-         struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = eMult;
-         $$ = multop;
-      }
-      | DIV {
-         struct MULTOP *multop = (struct MULTOP*) malloc (sizeof (struct MULTOP));
-         multop->m = eDiv;
-         $$ = multop;
-      }
-      ;
-Relaop: LE {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eLE;
-         $$ = relaop;
-      }
-      | GE {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eGE;
-         $$ = relaop;
-      }
-      | GT {
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eGT;
-         $$ = relaop;
-      }
-      | LT { 
-         struct RELAOP *relaop = (struct RELAOP*) malloc (sizeof (struct RELAOP));
-         relaop->r = eLT;
-         $$ = relaop;
-      }
-      ;
-Eqltop: EQ {
-         struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = eEQ;
-         $$ = eqltop;
-      }
-      | NE { 
-         struct EQLTOP *eqltop = (struct EQLTOP*) malloc (sizeof (struct EQLTOP));
-         eqltop->e = eNE;
-         $$ = eqltop;
-      }
-      ;
 While_s: WHILE '(' Expr ')'  Stmt  {
            struct WHILE_S* while_s = (struct WHILE_S*) malloc (sizeof(struct WHILE_S));
            while_s->do_while = false;
@@ -572,15 +541,14 @@ For_s: FOR '(' Assign ';' Expr ';' Assign ')' Stmt {
            $$ = for_s;
         }
        ;
-	   
-If_s: IF '(' Expr ')' Stmt %prec then{
+If_s: IF '(' Expr ')' Stmt %prec LOWER_THAN_ELSE {
        struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
        if_s->cond=$3;
        if_s->if_=$5;
        if_s->else_=NULL;
        $$ = if_s;
     }
-      | IF '(' Expr ')' Stmt ELSE Stmt {
+      | IF '(' Expr ')' Stmt ELSE Stmt{
        struct IF_S *if_s = (struct IF_S*) malloc (sizeof(struct IF_S));
        if_s->cond=$3;
        if_s->if_=$5;
@@ -589,7 +557,6 @@ If_s: IF '(' Expr ')' Stmt %prec then{
       }
       ;
 %%
-
 void doProcess();
 int main(int argc, char* argv[]) {
     //헤드 초기화, 만일 토큰이 없다면 dfs(), bfs() 를 작동하지 않게 함.
@@ -602,9 +569,9 @@ int main(int argc, char* argv[]) {
     if(!yyparse())
         doProcess();
     fprintf(fp, "\n");
-	pclose(fp);
+    pclose(fp);
     pclose(fp2);
-	return 0;
+    return 0;
 }
 void doProcess() {
     //TODO
@@ -618,5 +585,4 @@ void doProcess() {
     if(head->func != NULL)
         visitFunction(head->func);
 	BuildTree(head);
-	
 }

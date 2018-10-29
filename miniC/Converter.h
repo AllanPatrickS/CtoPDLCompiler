@@ -32,7 +32,3 @@ void visitFor_s2			(struct FOR_S* for_s);
 void visitIf_s2				(struct IF_S* if_s);
 void visitId_s2				(struct ID_S* id_s);
 void InsertSemicolon		(struct STMT* stmt);
-void visitMathRel2       	(struct MATHREL* math);
-void visitMathEql2			(struct MATHEQL* math);
-void visitTerm2 				(struct TERM* ter);
-void visitFactor2			(struct FACTOR* factor);

@@ -12,19 +12,7 @@ typedef enum
 typedef enum
 {eAssign,eCall,eRet,eWhile,eFor,eIf,eCompound,eSemi} Stmt_e;
 typedef enum
-{eUnop,eEqlt,eCallExpr,eId,eMathRel} Expr_e;
-typedef enum
-{eRela,eMathEql} MathRel_r;
-typedef enum
-{eAddi,eTerm} MathEql_e;
-typedef enum
-{eCom,eInc} Cond_c;
-typedef enum
-{eStmt,eIncom,eComp} Sta_s;
-typedef enum
-{eFactor,eMulti} Term_t;
-typedef enum
-{eIntnum,eFloatnum,eExpre} Factor_f;
+{eUnop,eAddi,eMulti,eRela,eEqlt,eCallExpr,eIntnum,eFloatnum,eId,eExpr} Expr_e;
 typedef enum
 {ePlus,eMinus} Addi_e;
 typedef enum
@@ -151,55 +139,17 @@ struct EXPR
 	Expr_e e;   // EXPR type (enumeration type)
 	union
 	{
-		struct UNOP *unop_; // -expr
-		struct MATHREL *mathrel_;
-		struct ADDIOP *addiop_; // epxr + expr
-		struct EXPR *bracket;
-		struct EQLTOP *eqltop_;
-		struct CALL *call_; // call 
-		struct ID_S *ID_; // id[expr]
-	} expression;
-};
-
-struct MATHREL
-{
-	MathRel_r r;
-	union
-	{
-		struct RELAOP *relaop_; // expr >= expr
-		struct MATHEQL *MathEql_; // expr >= expr
-	} math_rel;
-};
-
-struct MATHEQL
-{
-	MathEql_e e;
-	union
-	{
-		struct ADDIOP *addiop_; // expr == expr
-		struct TERM *term_;
-	} math_eql;
-};
-
-struct TERM
-{
-	Term_t t;
-	union
-	{
-		struct MULTOP *multop_;
-		struct FACTOR *Facop_;
-	} ter;
-};
-
-struct FACTOR
-{
-	Factor_f f;
-	union
-	{
 		int intnum; // int
 		float floatnum; // float
-		struct EXPR *bracket;
-	} fac;
+		struct UNOP *unop_; // -expr
+		struct ADDIOP *addiop_; // epxr + expr
+		struct MULTOP *multop_; // expr * expr
+		struct RELAOP *relaop_; // expr >= expr
+		struct EQLTOP *eqltop_; // expr == expr
+		struct CALL *call_; // call 
+		struct EXPR *bracket; // (expr)
+		struct ID_S *ID_; // id[expr]
+	} expression;
 };
 
 struct UNOP
@@ -212,31 +162,31 @@ struct UNOP
 struct ADDIOP
 {
 	Addi_e a;
-	struct TERM *lhs;
-	struct MATHEQL *rhs;
+	struct EXPR *lhs;
+	struct EXPR *rhs;
 };
 
 /* lhs multiop rhs */
 struct MULTOP
 {
 	Mult_e m;
-	struct FACTOR *lhs;
-	struct TERM *rhs;
+	struct EXPR *lhs;
+	struct EXPR *rhs;
 };
 
 /* lhs relaop rhs */
 struct RELAOP
 {
 	Rela_e r;
-	struct MATHEQL *lhs;
-	struct MATHREL *rhs;
+	struct EXPR *lhs;
+	struct EXPR *rhs;
 };
 
 /* lhs eqltop rhs */
 struct EQLTOP
 {
 	Eqlt_e e;
-	struct MATHREL *lhs;
+	struct EXPR *lhs;
 	struct EXPR *rhs;
 };
 
