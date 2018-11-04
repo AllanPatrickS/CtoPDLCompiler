@@ -137,7 +137,13 @@ void visitFunction2      (struct FUNCTION* func) {
     }
     //printf ("%s (", func->ID);//function name
 	//insert(aux, "child", func->ID);
-    insert(aux, "child", " (");
+    if(func->ID != "main"){
+		printf(func->ID);
+		printf("aaaa\n");
+		insert(aux,"child", func->ID);
+	}
+	
+	insert(aux, "child", " (");
 	_isTitlePrinted2 = false;
     if(func->param != NULL) {
         _isTitlePrinted2 = true;
@@ -346,38 +352,7 @@ void visitArg2           (struct ARG* arg) {
     }   
     visitExpr2(arg->expr);
 }
-
-void Parts(struct EXPR* expr){
-	char *variable = "_t";
-	switch(expr->e) {
-		case eId:
-			x++;
-			insert(aux, "child", variable);	
-			insert(aux, "child", ";");
-			insert(aux, "child", variable);
-			insert(aux, "child", "=");
-            break;
-		case eIntnum:
-			x++;
-			insert(aux, "child", variable);
-			insert(aux, "child", ";");
-			insert(aux, "child", variable);
-			insert(aux, "child", "=");
-            break;
-
-		case eFloatnum:
-			x++;
-			insert(aux, "child", variable);
-			insert(aux, "child", ";");
-			insert(aux, "child", variable);
-			insert(aux, "child", "=");
-            break;
-
-		default:
-			break;		
-    }
-}
-
+	
 void visitExpr2          (struct EXPR* expr) {
     switch(expr->e) {
         case eUnop:
@@ -482,6 +457,37 @@ void visitExpr2          (struct EXPR* expr) {
             break;	
     }
 }	
+
+void Parts(struct EXPR* expr){
+    char *variable = "_t";
+    switch(expr->e) {
+        case eId:
+            x++;
+            insert(aux, "child", variable); 
+            insert(aux, "child", ";");
+            insert(aux, "child", variable);
+            insert(aux, "child", "=");
+            break;
+        case eIntnum:
+            x++;
+            insert(aux, "child", variable);
+            insert(aux, "child", ";");
+            insert(aux, "child", variable);
+            insert(aux, "child", "=");
+            break;
+
+        case eFloatnum:
+            x++;
+            insert(aux, "child", variable);
+            insert(aux, "child", ";");
+            insert(aux, "child", variable);
+            insert(aux, "child", "=");
+            break;
+
+        default:
+            break;    
+    }   
+}
 
 void visitWhile_s2       (struct WHILE_S* while_s) {
     if(while_s->do_while == true) {
