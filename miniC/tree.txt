@@ -1,18 +1,8 @@
-int plus (int n1, int n2)
-{
-int sum;
-sum  = n1 + n2;
-return sum;
-}
-
 int main ()
 {
-int n1;
-int n2;
+int i, j, a, b, c;
 int result;
-n1  = 10;
-n2  = 20;
-result  = plus(n1, n2);
+result  = i + j + c * b - a;
 return 0;
 }
 

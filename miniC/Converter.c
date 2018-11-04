@@ -21,7 +21,6 @@ No *aux;
 FILE* fp;
 Numero* numero;
 int x = 0;
-int teste2 = 0;
 
 No* insert(No *no, char *choice, char *chars){
     if (root==NULL){
@@ -135,9 +134,6 @@ void visitFunction2      (struct FUNCTION* func) {
             //printf("Declaration does not exist.\n");
             exit(1);
     }
-    //printf ("%s (", func->ID);//function name
-	//insert(aux, "child", func->ID);
-	//if(func->ID != "main") insert(aux, "child" ,func->ID);
 		
 	insert(aux, "child", " (");
 	_isTitlePrinted2 = false;
@@ -161,8 +157,8 @@ void visitIdentifier2    (struct IDENTIFIER* iden) {
        // printf(", ");
 		//insert(aux, "child", ", ");
     }
-	if( _curType2 == eInt) insert(aux,"child","int ");
-	if( _curType2 == eFloat) insert(aux,"child","float ");	
+	if(( _curType2 == eInt) && (_isParam2 == false)) insert(aux,"child","int ");
+	if(( _curType2 == eFloat) && (_isParam2 == false)) insert(aux,"child","float ");	
     //printf ("%s", iden->ID);
 	insert(aux, "child", iden->ID);
 	insert(aux,"child",";");
@@ -462,7 +458,6 @@ void Parts(struct EXPR* expr){
             insert(aux, "child", variable);
             insert(aux, "child", ";");
             insert(aux, "child", variable);
-			teste2++;
             insert(aux, "child", "=");
             break;
         case eIntnum:

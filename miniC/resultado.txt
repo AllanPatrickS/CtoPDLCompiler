@@ -1,1 +1,1 @@
-plus (int int n1;, int int n2;int sum;sum = n1 + _a;_b=n2;return sum)main (int n1;int n2;int result;n1 = 10;n2 = 20;result = plus(n1, n2);return 0)
+ (int i;int j;int a;int b;int c;int result;result = i + _t;_t=j + _t;_t=c * _t;_t=b - _t;_t=a;return 0)
