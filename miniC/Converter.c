@@ -20,6 +20,8 @@ No *root;
 No *aux;
 FILE* fp;
 Numero* numero;
+int x = 0;
+
 
 No* insert(No *no, char *choice, char *chars){
     if (root==NULL){
@@ -359,6 +361,7 @@ void visitExpr2          (struct EXPR* expr) {
                 insert(aux, "child", " + ");
             else
                 insert(aux, "child", " - ");
+			Parts(expr->expression.addiop_->rhs);
             visitExpr2(expr->expression.addiop_->rhs);
             break;
 		
@@ -368,6 +371,7 @@ void visitExpr2          (struct EXPR* expr) {
                 insert(aux, "child", " * ");
             else
                 insert(aux, "child", " / ");
+			Parts(expr->expression.multop_->rhs);
             visitExpr2(expr->expression.multop_->rhs);
             break;
 			
@@ -579,6 +583,27 @@ void InsertSemicolon(struct STMT* stmt){
 
 		}
 	}
+	
+void Parts(struct EXPR* expr){
+	char *variable = "_t";
+	switch(expr->e) {
+		case eAddi:
+			x++;
+			
+			insert(aux, "child", variable);
+			insert(aux, "child", "=");
+            break;
+		
+		case eMulti:
+			x++;
+			insert(aux, "child", variable);
+			insert(aux, "child", "=");
+            break;
+		default:
+			break;
+    }
+	
+}
 	
 }
 
