@@ -347,6 +347,37 @@ void visitArg2           (struct ARG* arg) {
     visitExpr2(arg->expr);
 }
 
+void Parts(struct EXPR* expr){
+	char *variable = "_t";
+	switch(expr->e) {
+		case eId:
+			x++;
+			insert(aux, "child", variable);	
+			insert(aux, "child", ";");
+			insert(aux, "child", variable);
+			insert(aux, "child", "=");
+            break;
+		case eIntnum:
+			x++;
+			insert(aux, "child", variable);
+			insert(aux, "child", ";");
+			insert(aux, "child", variable);
+			insert(aux, "child", "=");
+            break;
+
+		case eFloatnum:
+			x++;
+			insert(aux, "child", variable);
+			insert(aux, "child", ";");
+			insert(aux, "child", variable);
+			insert(aux, "child", "=");
+            break;
+
+		default:
+			break;		
+    }
+}
+
 void visitExpr2          (struct EXPR* expr) {
     switch(expr->e) {
         case eUnop:
@@ -584,26 +615,7 @@ void InsertSemicolon(struct STMT* stmt){
 		}
 	}
 	
-void Parts(struct EXPR* expr){
-	char *variable = "_t";
-	switch(expr->e) {
-		case eAddi:
-			x++;
-			
-			insert(aux, "child", variable);
-			insert(aux, "child", "=");
-            break;
-		
-		case eMulti:
-			x++;
-			insert(aux, "child", variable);
-			insert(aux, "child", "=");
-            break;
-		default:
-			break;
-    }
-	
-}
+
 	
 }
 

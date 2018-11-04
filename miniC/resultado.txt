@@ -1,1 +1,1 @@
- (int result;result = 0;( (result > 0)? ;result = 1 )U(¬(result > 0)? ;result = 2;result = 32);return result)
+ (int i;int j;int a;int b;int c;int result;result = i + _t;_t=j + _t;_t=c * _t;_t=b - _t;_t=a;return 0)
