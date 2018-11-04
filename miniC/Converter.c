@@ -21,8 +21,8 @@ No *aux;
 FILE* fp;
 Numero* numero;
 int x = 0;
-char* teste[15] = { "_a" , "_b" , "_c" , "_d" ,"_e" , "_f" , "_g" , "_h" , "_i" , "_j" , "_k" , "_l" , "_m" , "_n" , "_o"  };
 int teste2 = 0;
+
 No* insert(No *no, char *choice, char *chars){
     if (root==NULL){
         root = (No*)malloc(sizeof(No));
@@ -137,7 +137,7 @@ void visitFunction2      (struct FUNCTION* func) {
     }
     //printf ("%s (", func->ID);//function name
 	//insert(aux, "child", func->ID);
-	if(func->ID != "main") insert(aux, "child" ,func->ID);
+	//if(func->ID != "main") insert(aux, "child" ,func->ID);
 		
 	insert(aux, "child", " (");
 	_isTitlePrinted2 = false;
@@ -459,26 +459,25 @@ void Parts(struct EXPR* expr){
     switch(expr->e) {
         case eId:
             x++;
-            insert(aux, "child", teste[teste2]);
-			teste2++; 
+            insert(aux, "child", variable);
             insert(aux, "child", ";");
-            insert(aux, "child", teste[teste2]);
+            insert(aux, "child", variable);
 			teste2++;
             insert(aux, "child", "=");
             break;
         case eIntnum:
             x++;
-            insert(aux, "child", teste[teste2]);
+            insert(aux, "child", variable);
             insert(aux, "child", ";");
-            insert(aux, "child", teste[teste2]);
+            insert(aux, "child", variable);
             insert(aux, "child", "=");
             break;
 
         case eFloatnum:
             x++;
-            insert(aux, "child", teste[teste2]);
+            insert(aux, "child", variable);
             insert(aux, "child", ";");
-            insert(aux, "child", teste[teste2]);
+            insert(aux, "child", variable);
             insert(aux, "child", "=");
             break;
 
