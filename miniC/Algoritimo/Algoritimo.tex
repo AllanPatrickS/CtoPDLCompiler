@@ -152,10 +152,12 @@ Output = Arvore/Arquivo
 		\eIf{StmtSdo\_while == true}{
 			visitStmt(stmtS\_while)\;
 			insert(WhileCondition)\;
+			visitStmt(stmtS\_while)\;
+			insert(")*")\;
 		}{
 			insert(WhileCondition)\;
 			visitStmt(stmtS\_while)\;
-			insert(WhileCondition)\;
+			insert(")*")\;
 		}
 	}
 	\Case{For}{
