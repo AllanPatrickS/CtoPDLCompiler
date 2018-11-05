@@ -1,2 +1,1 @@
-plus=(int n1;, int n2;int sum;sum = n1 + n2;return sum)
-(int n1;int n2;int result;n1 = 10;n2 = 20;result = plus(n1, n2);return 0)
+(int i;int j;int a;int b;int c;int result;result = i + _t1;_t1=j + _t2;_t2=c * _t3;_t3=b - a;return 0)

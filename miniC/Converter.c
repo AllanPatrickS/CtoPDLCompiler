@@ -156,7 +156,8 @@ void visitFunction2      (struct FUNCTION* func) {
     _isTitlePrinted2 = false;
 }
 void visitIdentifier2    (struct IDENTIFIER* iden) {
-    if(iden->prev != NULL) {
+       
+	if(iden->prev != NULL) {
         visitIdentifier2(iden->prev);
        // printf(", ");
 		//insert(aux, "child", ", ");
@@ -267,10 +268,9 @@ void visitStmt2          (struct STMT* stmt) {
 }
 void visitParameter2     (struct PARAMETER* param) {
     _isParam2 = true;
+	/*
     if(param->prev != NULL) {
         visitParameter2(param->prev);
-        //printf (", ");
-		insert(aux, "child", ", ");
     }
     switch(param->t) {
         case eInt:
@@ -289,7 +289,8 @@ void visitParameter2     (struct PARAMETER* param) {
     }
     _needPrinted2 = true;
     visitIdentifier2(param->id);
-    _needPrinted2 = false;
+	_needPrinted2 = false;
+	*/
 }
 void visitCompoundStmt2  (struct COMPOUNDSTMT* cstmt) {
     if(_isCompound2 == true) {
