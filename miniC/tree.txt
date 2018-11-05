@@ -1,8 +1,0 @@
-int main ()
-{
-int i, j, a, b, c;
-int result;
-result  = i + j + c * b - a;
-return 0;
-}
-

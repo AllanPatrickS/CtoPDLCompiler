@@ -7,7 +7,7 @@
 #include "symboltable.h"
 #include "Converter.h"
 #include "AST.h"
- 
+#include <string.h> 
  
  
 bool _isParam2 = false;
@@ -21,6 +21,8 @@ No *aux;
 FILE* fp;
 Numero* numero;
 int x = 0;
+
+
 
 No* insert(No *no, char *choice, char *chars){
     if (root==NULL){
@@ -451,17 +453,21 @@ void visitExpr2          (struct EXPR* expr) {
 }	
 
 void Parts(struct EXPR* expr){
-    char *variable = "_t";
-    switch(expr->e) {
-        case eId:
-            x++;
+    char var[] = "_tX";
+	int buffersize = 3;
+	char* variable = malloc(buffersize);
+	switch(expr->e) {
+        case eId
+			var[2] = ++x + '0';
+			strncpy(variable,var,buffersize);
             insert(aux, "child", variable);
             insert(aux, "child", ";");
             insert(aux, "child", variable);
             insert(aux, "child", "=");
             break;
         case eIntnum:
-            x++;
+            var[2] = ++x + '0';
+            strncpy(variable,var,buffersize);
             insert(aux, "child", variable);
             insert(aux, "child", ";");
             insert(aux, "child", variable);
@@ -469,7 +475,8 @@ void Parts(struct EXPR* expr){
             break;
 
         case eFloatnum:
-            x++;
+            var[2] = ++x + '0';
+			strncpy(variable,var,buffersize);
             insert(aux, "child", variable);
             insert(aux, "child", ";");
             insert(aux, "child", variable);
