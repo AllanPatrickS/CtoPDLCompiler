@@ -1,5 +1,5 @@
 
-#line 3 "lex.yy.c"
+#line 2 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -488,8 +488,8 @@ char *yytext;
 #include <string.h>
 #include "AST.h"
 #include "miniC.tab.h"
+#line 491 "lex.yy.c"
 #line 492 "lex.yy.c"
-#line 493 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -709,7 +709,7 @@ YY_DECL
 #line 17 "miniC.l"
 
 
-#line 713 "lex.yy.c"
+#line 712 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -929,7 +929,7 @@ YY_RULE_SETUP
 #line 68 "miniC.l"
 ECHO;
 	YY_BREAK
-#line 933 "lex.yy.c"
+#line 932 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1193,8 +1193,6 @@ static int yy_get_next_buffer (void)
 			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
 			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
-		/* "- 2" to take care of EOB's */
-		YY_CURRENT_BUFFER_LVALUE->yy_buf_size = (int) (new_size - 2);
 	}
 
 	(yy_n_chars) += number_to_move;

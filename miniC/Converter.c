@@ -21,8 +21,7 @@ No *aux;
 FILE* fp;
 Numero* numero;
 int x = 0;
-
-
+int tag = 0;
 
 No* insert(No *no, char *choice, char *chars){
     if (root==NULL){
@@ -136,8 +135,11 @@ void visitFunction2      (struct FUNCTION* func) {
             //printf("Declaration does not exist.\n");
             exit(1);
     }
-    insert(aux,"child", func->ID);		
-	insert(aux, "child", " (");
+	if(strcmp(func->ID, "main")){
+	    insert(aux,"child", func->ID);
+		insert(aux, "child", "=");
+	}
+	insert(aux, "child", "(");
 	_isTitlePrinted2 = false;
     if(func->param != NULL) {
         _isTitlePrinted2 = true;
@@ -148,7 +150,7 @@ void visitFunction2      (struct FUNCTION* func) {
     insert(aux, "child", ")");
 	//printf("\n");
 	//insert(aux, "child", "\n");
-
+	insert(aux,"child","\n");
     //deleteCurScope 
     deleteScope(&scopeTail);
     _isTitlePrinted2 = false;
@@ -356,22 +358,28 @@ void visitExpr2          (struct EXPR* expr) {
             break;
 			
 		case eAddi:
+			tag++;
             visitExpr2(expr->expression.addiop_->lhs);
-            if(expr->expression.addiop_->a == ePlus)
+            tag--;
+			if(expr->expression.addiop_->a == ePlus)
                 insert(aux, "child", " + ");
             else
                 insert(aux, "child", " - ");
-			Parts(expr->expression.addiop_->rhs);
+			if(tag!=0)
+				Parts(expr->expression.addiop_->rhs);
             visitExpr2(expr->expression.addiop_->rhs);
             break;
 		
 		case eMulti:
+			tag++;
             visitExpr2(expr->expression.multop_->lhs);
-            if(expr->expression.multop_->m == eMult)
+			tag--;
+			if(expr->expression.multop_->m == eMult)
                 insert(aux, "child", " * ");
             else
                 insert(aux, "child", " / ");
-			Parts(expr->expression.multop_->rhs);
+			if(tag!=0)
+				Parts(expr->expression.multop_->rhs);
             visitExpr2(expr->expression.multop_->rhs);
             break;
 			
@@ -451,42 +459,6 @@ void visitExpr2          (struct EXPR* expr) {
             break;	
     }
 }	
-
-void Parts(struct EXPR* expr){
-    char var[] = "_tX";
-	int buffersize = 3;
-	char* variable = malloc(buffersize);
-	switch(expr->e) {
-        case eId:
-			var[2] = ++x + '0';
-			strncpy(variable,var,buffersize);
-            insert(aux, "child", variable);
-            insert(aux, "child", ";");
-            insert(aux, "child", variable);
-            insert(aux, "child", "=");
-            break;
-        case eIntnum:
-            var[2] = ++x + '0';
-            strncpy(variable,var,buffersize);
-            insert(aux, "child", variable);
-            insert(aux, "child", ";");
-            insert(aux, "child", variable);
-            insert(aux, "child", "=");
-            break;
-
-        case eFloatnum:
-            var[2] = ++x + '0';
-			strncpy(variable,var,buffersize);
-            insert(aux, "child", variable);
-            insert(aux, "child", ";");
-            insert(aux, "child", variable);
-            insert(aux, "child", "=");
-            break;
-
-        default:
-            break;    
-    }   
-}
 
 void visitWhile_s2       (struct WHILE_S* while_s) {
     if(while_s->do_while == true) {
@@ -619,8 +591,40 @@ void InsertSemicolon(struct STMT* stmt){
 
 		}
 	}
-	
-
-	
 }
 
+void Parts(struct EXPR* expr){
+    char var[] = "_tX";
+	int buffersize = 3;
+	char* variable = malloc(buffersize);
+	switch(expr->e) {
+        case eId:
+			var[2] = ++x + '0';
+			strncpy(variable,var,buffersize);
+            insert(aux, "child", variable);
+            insert(aux, "child", ";");
+            insert(aux, "child", variable);
+            insert(aux, "child", "=");
+            break;
+        case eIntnum:
+            var[2] = ++x + '0';
+            strncpy(variable,var,buffersize);
+            insert(aux, "child", variable);
+            insert(aux, "child", ";");
+            insert(aux, "child", variable);
+            insert(aux, "child", "=");
+            break;
+
+        case eFloatnum:
+            var[2] = ++x + '0';
+			strncpy(variable,var,buffersize);
+            insert(aux, "child", variable);
+            insert(aux, "child", ";");
+            insert(aux, "child", variable);
+            insert(aux, "child", "=");
+            break;
+
+        default:
+            break;    
+    }   
+}
