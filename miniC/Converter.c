@@ -136,7 +136,7 @@ void visitFunction2      (struct FUNCTION* func) {
             //printf("Declaration does not exist.\n");
             exit(1);
     }
-		
+    insert(aux,"child", func->ID);		
 	insert(aux, "child", " (");
 	_isTitlePrinted2 = false;
     if(func->param != NULL) {

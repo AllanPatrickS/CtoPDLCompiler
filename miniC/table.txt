@@ -1,9 +1,12 @@
 
+Function name : plus
+     count      type      name     array      role
+         1       int        n1           parameter
+         2       int        n2           parameter
+         3       int       sum            variable
+
 Function name : main
      count      type      name     array      role
-         1       int         i            variable
-         2       int         j            variable
-         3       int         a            variable
-         4       int         b            variable
-         5       int         c            variable
-         6       int    result            variable
+         1       int        n1            variable
+         2       int        n2            variable
+         3       int    result            variable
