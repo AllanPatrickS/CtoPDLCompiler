@@ -457,7 +457,7 @@ void Parts(struct EXPR* expr){
 	int buffersize = 3;
 	char* variable = malloc(buffersize);
 	switch(expr->e) {
-        case eId
+        case eId:
 			var[2] = ++x + '0';
 			strncpy(variable,var,buffersize);
             insert(aux, "child", variable);

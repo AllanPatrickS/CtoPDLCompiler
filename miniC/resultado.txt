@@ -1,0 +1,1 @@
+ (int i;int j;int a;int b;int c;int result;result = i + _t1;_t1=j + _t2;_t2=c * _t3;_t3=b - _t4;_t4=a;return 0)
