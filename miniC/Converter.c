@@ -18,10 +18,16 @@ bool _isTitlePrinted2 = false;
 Type_e _curType2;
 No *root;
 No *aux;
+No *aux2;
 FILE* fp;
 Numero* numero;
 int x = 0;
 int tag = 0;
+int tam = 0;
+int rows;
+char *Parts3[100][4];
+int pont = 0;
+
 
 No* insert(No *no, char *choice, char *chars){
     if (root==NULL){
@@ -39,8 +45,8 @@ No* insert(No *no, char *choice, char *chars){
             noAux->child = NULL;
             noAux->parent = NULL;
             noAux->chars = chars;
-            aux->child = noAux;
-            aux = aux->child;
+            no->child = noAux;
+            aux = no->child;
             return aux;
  
         }else if(choice == "parent"){
@@ -48,8 +54,8 @@ No* insert(No *no, char *choice, char *chars){
             noAux->child = NULL;
             noAux->parent = NULL;
             noAux->chars = chars;
-            aux->child = noAux;
-            aux = aux->parent;
+            no->child = noAux;
+            aux = no->parent;
             return aux;
         }
     }
@@ -78,6 +84,13 @@ void BuildTree(struct PROGRAM* head){
     if(head->func != NULL){
         visitFunction2(head->func);
     }
+	for(int i = 0; i<tam;i++){
+		for(int j = 0; j < 4; j++){
+			printf(Parts3[i][j]);
+			printf(" ");
+		}
+					printf("\n");
+	}
     print(root, fp);
     printf("\n");
 	fclose(fp);
@@ -225,6 +238,7 @@ void visitStmt2          (struct STMT* stmt) {
             }
             else {
                 //printf ("return ");
+				aux2 = aux;
 				insert(aux, "child", "return ");
                 visitExpr2(stmt->stmt.return_);
                 //printf (";");
@@ -318,16 +332,18 @@ void visitCompoundStmt2  (struct COMPOUNDSTMT* cstmt) {
 }
 void visitAssignStmt2    (struct ASSIGN* assign) {
     //printf("%s ",assign->ID);
-	insert(aux, "child", assign->ID);
+	aux2 = (No*)malloc(sizeof(No));
+	aux2->child = NULL;
+	aux2->parent = NULL;
+	aux2->chars = assign->ID;
     if(assign->index != NULL) {
         //printf("[");
 		insert(aux, "child", "[");
-        visitExpr2(assign->index);
+        visitExpr2	(assign->index);
         //printf("]");
 		insert(aux, "child", "]");
     }
     //printf(" = ");
-	insert(aux, "child", " = ");
     visitExpr2(assign->expr);
 }
 void visitCallStmt2      (struct CALL* call) {
@@ -345,12 +361,13 @@ void visitArg2           (struct ARG* arg) {
         visitArg2(arg->prev);
         //printf(", ");
 		insert(aux, "child", ", ");
-    }   
+    }
+	aux2 = aux;
     visitExpr2(arg->expr);
 }
 	
 void visitExpr2          (struct EXPR* expr) {
-    switch(expr->e) {
+	switch(expr->e) {
         case eUnop:
             //printf("-");
 			insert(aux, "child", "-");
@@ -361,26 +378,73 @@ void visitExpr2          (struct EXPR* expr) {
 			tag++;
             visitExpr2(expr->expression.addiop_->lhs);
             tag--;
-			if(expr->expression.addiop_->a == ePlus)
-                insert(aux, "child", " + ");
-            else
-                insert(aux, "child", " - ");
+			if(expr->expression.addiop_->a == ePlus){
+                Parts3[tag][2] = "+";
+			}
+            else{
+                Parts3[tag][2] = "-";
+			}
+
+            visitExpr2(expr->expression.addiop_->rhs);
+			
 			if(tag!=0)
 				Parts(expr->expression.addiop_->rhs);
-            visitExpr2(expr->expression.addiop_->rhs);
+			else{
+				Parts3[tam][0] = aux2->chars;
+				tam++;
+				for(int i = pont;i<tam;i++){
+					if(i>0){
+						Parts3[i][3]= Parts3[i-1][0];
+					}
+				}
+				for(pont; pont<tam;pont++){
+					insert(aux, "child", Parts3[pont][0]);
+					insert(aux, "child", "=");
+					insert(aux, "child", Parts3[pont][1]);
+					insert(aux, "child", Parts3[pont][2]);
+					insert(aux,"child",  Parts3[pont][3]);
+					if(!(pont+1==tam))
+						insert(aux, "child", ";");
+				}
+
+			}
+			
             break;
 		
 		case eMulti:
 			tag++;
             visitExpr2(expr->expression.multop_->lhs);
 			tag--;
-			if(expr->expression.multop_->m == eMult)
-                insert(aux, "child", " * ");
-            else
-                insert(aux, "child", " / ");
+			if(expr->expression.multop_->m == eMult){
+				Parts3[tag][2] = "*";
+			}
+            else{
+				Parts3[tag][2] = "/";
+			}
+
+            visitExpr2(expr->expression.multop_->rhs);
+			
 			if(tag!=0)
 				Parts(expr->expression.multop_->rhs);
-            visitExpr2(expr->expression.multop_->rhs);
+			else{
+				Parts3[tam][0] = aux2->chars;
+				tam++;
+				for(int i = pont;i<tam-1;i++){
+					if(i>0){
+						Parts3[i][3]= Parts3[i-1][0];
+					}
+				}
+				for(pont; pont<tam;pont++){
+					insert(aux, "child", Parts3[pont][0]);
+					insert(aux, "child", "=");
+					insert(aux, "child", Parts3[pont][1]);
+					insert(aux, "child", Parts3[pont][2]);
+					insert(aux, "child", Parts3[pont][3]);
+					if(!pont+1==tam)
+						insert(aux, "child", ";");
+				}
+			}
+			
             break;
 			
 		case eRela:
@@ -403,7 +467,7 @@ void visitExpr2          (struct EXPR* expr) {
                     break;
             }
             visitExpr2(expr->expression.relaop_->rhs);
-            break;
+            break;	
 			
 		case eEqlt:
             visitExpr2(expr->expression.eqltop_->lhs);
@@ -472,10 +536,12 @@ void visitWhile_s2       (struct WHILE_S* while_s) {
         visitStmt2(while_s->stmt);
         //printf("while (");
 		insert(aux, "child", "(");
+		aux2 = aux;
         visitExpr2(while_s->cond);
 		insert(aux,"child",")?");
         //printf(");\n");
 		insert(aux, "child", ")*;¬(");
+		aux2 = aux;
 		visitExpr2(while_s->cond);
 		insert(aux,"child",")? ");
 		
@@ -487,12 +553,14 @@ void visitWhile_s2       (struct WHILE_S* while_s) {
 
         //printf("while (");
 		insert(aux, "child", "( (");
+		aux2 = aux;
         visitExpr2(while_s->cond);
 		insert(aux,"child",")?");
         //printf(")\n");
 		//insert(aux, "child", ")\n");
         visitStmt2(while_s->stmt);
     	insert(aux, "child", ")*;  ¬(");
+		aux2 = aux;
         visitExpr2(while_s->cond);
         insert(aux,"child",")?");
     
@@ -511,6 +579,7 @@ void visitFor_s2         (struct FOR_S* for_s) {
 	insert(aux, "child","(");
     visitAssignStmt2(for_s->init);
 	insert(aux,"child",";(");
+	aux2 = aux;
     visitExpr2(for_s->cond);
     insert(aux,"child",")?");
     //printf("; ");
@@ -521,6 +590,7 @@ void visitFor_s2         (struct FOR_S* for_s) {
     visitAssignStmt2(for_s->inc);
     //printf(")\n");
 	insert(aux,"child",")*;¬(");
+	aux2 = aux;
 	visitExpr2(for_s->cond);
 	insert(aux,"child",")?");
 
@@ -534,6 +604,7 @@ void visitIf_s2          (struct IF_S* if_s) {
     scopeTail->parent->if_n++;
 
     insert(aux, "child", "( (");
+	aux2 = aux;
     visitExpr2(if_s->cond);
 	insert(aux,"child",")? ");
 	if(if_s->if_->s){
@@ -544,6 +615,7 @@ void visitIf_s2          (struct IF_S* if_s) {
     if (if_s->else_ != NULL) {
         //printf("\nelse\n");
         insert(aux, "child", "U(¬(");
+		aux2 = aux;
         visitExpr2(if_s->cond);
         insert(aux,"child",")? ");
 		if(if_s->else_->s){
@@ -555,10 +627,22 @@ void visitIf_s2          (struct IF_S* if_s) {
 }
 void visitId_s2          (struct ID_S* id_s) {
    //printf("%s",id_s->ID);
-   insert(aux, "child", id_s->ID);
+   rows = tag;
+   if(tag==0){
+	   Parts3[0][3]= id_s->ID;
+   }
+   else if(tag==1){
+	   Parts3[0][1]= id_s->ID;
+   }
+   else {
+	   rows--;
+	   Parts3[rows][1]= id_s->ID;
+   }
+
    if(id_s->expr != NULL) {
     //printf("[");
 	insert(aux, "child", "[");
+	aux2 = aux;
     visitExpr2(id_s->expr);
     //printf("]");
 	insert(aux, "child", "]");
@@ -574,7 +658,7 @@ void InsertSemicolon(struct STMT* stmt){
 				insert(aux, "child", ";");
 				return;
 			case eFor:
-				insert(aux, "child", ";");
+				insert(aux, "child", ";");	
 				return;
 			case eIf:
 				insert(aux, "child", ";");
@@ -595,35 +679,27 @@ void InsertSemicolon(struct STMT* stmt){
 
 void Parts(struct EXPR* expr){
     char var[] = "_tX";
-	int buffersize = 3;
+	int buffersize = 100;
 	char* variable = malloc(buffersize);
 	switch(expr->e) {
         case eId:
 			var[2] = ++x + '0';
 			strncpy(variable,var,buffersize);
-            insert(aux, "child", variable);
-            insert(aux, "child", ";");
-            insert(aux, "child", variable);
-            insert(aux, "child", "=");
+			Parts3[tam][0] = variable;
+			tam++;
             break;
         case eIntnum:
             var[2] = ++x + '0';
             strncpy(variable,var,buffersize);
-            insert(aux, "child", variable);
-            insert(aux, "child", ";");
-            insert(aux, "child", variable);
-            insert(aux, "child", "=");
+			Parts3[tam][0] = variable;
+			tam++;
             break;
-
         case eFloatnum:
-            var[2] = ++x + '0';
+			var[2] = ++x + '0';
 			strncpy(variable,var,buffersize);
-            insert(aux, "child", variable);
-            insert(aux, "child", ";");
-            insert(aux, "child", variable);
-            insert(aux, "child", "=");
+			Parts3[tam][0] = variable;
+			tam++;
             break;
-
         default:
             break;    
     }   
