@@ -84,6 +84,9 @@ void BuildTree(struct PROGRAM* head){
     if(head->func != NULL){
         visitFunction2(head->func);
     }
+    /*
+	Comentei pelo warning
+
 	for(int i = 0; i<tam;i++){
 		for(int j = 0; j < 4; j++){
 			printf(Parts3[i][j]);
@@ -91,13 +94,14 @@ void BuildTree(struct PROGRAM* head){
 		}
 					printf("\n");
 	}
+	*/
     print(root, fp);
     printf("\n");
 	fclose(fp);
 }
  
 void visitDeclaration2   (struct DECLARATION* decl) {
-    _isParam2 = false;   //needed when we have to decide it is parameter or variable.
+    _isParam2 = false;
     if(decl->prev != NULL) {
         visitDeclaration2(decl->prev);
     }
@@ -107,80 +111,61 @@ void visitDeclaration2   (struct DECLARATION* decl) {
 
     switch(decl->t) {
         case eInt:
-            //printf ("int ");
-			//insert(aux, "child", "int ");
             _curType2 = eInt;
             break;
         case eFloat:
-            //printf ("float ");
-			//insert(aux, "child", "float ");
             _curType2 = eFloat;
             break;
         default:
-            //printf("Declaration does not exist.\n");
             exit(1);
     }
     _needPrinted2 = true;
     visitIdentifier2(decl->id);
     _needPrinted2 = false;
-    //printf (";\n");
-	//insert(aux, "child", ";");
+
 }
 void visitFunction2      (struct FUNCTION* func) {
 	 if(func->prev != NULL) {
         visitFunction2(func->prev);
     }
-    //for symboltable
-    _curFuncName = func->ID;
-    //list node
-    scopeTail = newScope(sFUNC, scopeTail); //append it to the end of list
 
-    switch(func->t) {
-        case eInt:
-            //printf ("int ");
-			//insert(aux, "child", "int ");
-            break;
-        case eFloat:
-            //printf ("float ");
-			//insert(aux, "child", "float ");
-            break;
-        default:
-            //printf("Declaration does not exist.\n");
-            exit(1);
-    }
+    _curFuncName = func->ID;
+
+    scopeTail = newScope(sFUNC, scopeTail); 
+
 	if(strcmp(func->ID, "main")){
 	    insert(aux,"child", func->ID);
+	    if(func->param != NULL) {
+        	_isTitlePrinted2 = true;
+        	insert(aux,"child","(");
+       		visitParameter2(func->param); 
+       		insert(aux,"child",")");
+	    }
 		insert(aux, "child", "=");
 	}
 	insert(aux, "child", "(");
 	_isTitlePrinted2 = false;
-    if(func->param != NULL) {
-        _isTitlePrinted2 = true;
-        visitParameter2(func->param);    //parameter 
-    }
-    //printf (")\n");//function name
-	visitCompoundStmt2(func->cstmt); //compoundStmt
+    
+	visitCompoundStmt2(func->cstmt);
     insert(aux, "child", ")");
-	//printf("\n");
-	//insert(aux, "child", "\n");
+
 	insert(aux,"child","\n");
-    //deleteCurScope 
+
     deleteScope(&scopeTail);
     _isTitlePrinted2 = false;
 }
 void visitIdentifier2    (struct IDENTIFIER* iden) {
     if(iden->prev != NULL) {
         visitIdentifier2(iden->prev);
-       // printf(", ");
-		//insert(aux, "child", ", ");
+
     }
-	if(( _curType2 == eInt) && (_isParam2 == false)) insert(aux,"child","int ");
-	if(( _curType2 == eFloat) && (_isParam2 == false)) insert(aux,"child","float ");	
-    //printf ("%s", iden->ID);
+	if(( _curType2 == eInt)) insert(aux,"child","int ");
+	if(( _curType2 == eFloat)) insert(aux,"child","float ");	
+
 	insert(aux, "child", iden->ID);
-	insert(aux,"child",";");
+	if( _isParam2 == false) insert(aux,"child",";");
     if(iden->intnum > 0) {
-        //printf ("[%d]", iden->intnum);
+
 		insert(aux, "child", "[");
 		
 		char num[255];
@@ -196,24 +181,23 @@ void visitIdentifier2    (struct IDENTIFIER* iden) {
                 curType = "int";
             else
                 curType = "float";
-            //fprintf( fp2, "%10d%10s%10s%10d%10s\n", _rowNumber++ , curType, iden->ID, iden->intnum, _isParam2 ? "parameter" : "variable");
+       
         }
     } else if(iden->intnum < 0) {
         printf("minus array");
     } else { 
-        //scalar
+        
         if( _needPrinted2 == true) {
             char* curType;
             if(_curType2 == eInt)
                 curType = "int";
             else
                 curType = "float";
-            //fprintf( fp2, "%10d%10s%10s%10s%10s\n", _rowNumber++ , curType, iden->ID, "", _isParam2 ? "parameter" : "variable"); //_rowNumber(x) ++_rowNumber(x) _rowNumber++(o)
         }
     }
 }
 void visitStmt2          (struct STMT* stmt) {
-    //TODO
+    
     if(stmt->prev != NULL)
         visitStmt2(stmt->prev);
 	
@@ -221,28 +205,22 @@ void visitStmt2          (struct STMT* stmt) {
         case eAssign:
 			InsertSemicolon(stmt);
             visitAssignStmt2(stmt->stmt.assign_);
-            //printf(";");
             break;
 
         case eCall:
 			InsertSemicolon(stmt);
             visitCallStmt2(stmt->stmt.call_);
-            //printf(";");
             break;
 
         case eRet:
 			InsertSemicolon(stmt);
             if(stmt->stmt.return_ == NULL){
-                //printf ("return;");
 				insert(aux, "child", "return;");
             }
             else {
-                //printf ("return ");
 				aux2 = aux;
 				insert(aux, "child", "return ");
                 visitExpr2(stmt->stmt.return_);
-                //printf (";");
-				//insert(aux, "child", ";");
             }
             break;
 
@@ -268,61 +246,43 @@ void visitStmt2          (struct STMT* stmt) {
                 _isCompound2 = true;
             visitCompoundStmt2(stmt->stmt.cstmt_);
             return;
-            //break;
+
 
         case eSemi:
-            //printf(";");
 			InsertSemicolon(stmt); 
             break;
 
     }
-    //printf("\n");
-	//insert(aux, "child", "\n");
 }
+
 void visitParameter2     (struct PARAMETER* param) {
+	
     _isParam2 = true;
     if(param->prev != NULL) {
         visitParameter2(param->prev);
-        //printf (", ");
+
 		insert(aux, "child", ", ");
     }
-    switch(param->t) {
-        case eInt:
-            //printf ("int ");
-			insert(aux, "child", "int ");			
-            _curType2 = eInt;
-            break;
-        case eFloat:
-            //printf ("float ");
-			insert(aux, "child", "float ");
-            _curType2 = eFloat;
-            break;
-        default:
-            printf("Declaration does not exist.\n");
-            exit(1);
-    }
+
     _needPrinted2 = true;
     visitIdentifier2(param->id);
     _needPrinted2 = false;
+   
 }
 void visitCompoundStmt2  (struct COMPOUNDSTMT* cstmt) {
     if(_isCompound2 == true) {
-        //making node for symbol table
+
         scopeTail = newScope(sCOMPOUND, scopeTail);
         _isTitlePrinted2 = false;
         scopeTail->parent->compound_n++;
     }
     _isOtherComp2 = false;
 
-    //printf("{\n");
-	//insert(aux, "child", "{\n");
     if(cstmt->decl != NULL) { 
         visitDeclaration2(cstmt->decl);
     }
     if(cstmt->stmt != NULL)
         visitStmt2(cstmt->stmt);
-    //printf("}\n");
-	//insert(aux, "child", "}\n");
 
     if(_isCompound2 == true) {
         deleteScope(&scopeTail);
@@ -331,20 +291,24 @@ void visitCompoundStmt2  (struct COMPOUNDSTMT* cstmt) {
     _isOtherComp2 = false;
 }
 void visitAssignStmt2    (struct ASSIGN* assign) {
+	
+
     //printf("%s ",assign->ID);
 	aux2 = (No*)malloc(sizeof(No));
 	aux2->child = NULL;
 	aux2->parent = NULL;
 	aux2->chars = assign->ID;
+    
     if(assign->index != NULL) {
-        //printf("[");
+
 		insert(aux, "child", "[");
         visitExpr2	(assign->index);
-        //printf("]");
 		insert(aux, "child", "]");
+    
     }
-    //printf(" = ");
+    
     visitExpr2(assign->expr);
+
 }
 void visitCallStmt2      (struct CALL* call) {
     //printf("%s(", call->ID);
@@ -369,12 +333,13 @@ void visitArg2           (struct ARG* arg) {
 void visitExpr2          (struct EXPR* expr) {
 	switch(expr->e) {
         case eUnop:
-            //printf("-");
+
 			insert(aux, "child", "-");
             visitExpr2(expr->expression.unop_->expr);
             break;
 			
 		case eAddi:
+
 			tag++;
             visitExpr2(expr->expression.addiop_->lhs);
             tag--;
@@ -408,7 +373,7 @@ void visitExpr2          (struct EXPR* expr) {
 				}
 
 			}
-			
+
             break;
 		
 		case eMulti:
@@ -678,9 +643,11 @@ void InsertSemicolon(struct STMT* stmt){
 }
 
 void Parts(struct EXPR* expr){
+
     char var[] = "_tX";
 	int buffersize = 100;
 	char* variable = malloc(buffersize);
+
 	switch(expr->e) {
         case eId:
 			var[2] = ++x + '0';

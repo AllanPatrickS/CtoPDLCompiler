@@ -1,8 +1,18 @@
+int plus (int n1, int n2)
+{
+int sum;
+sum  = n1 + n2;
+return sum;
+}
+
 int main ()
 {
-int i, j, a, b, c;
+int n1;
+int n2;
 int result;
-result  = i + j + c * b - a;
-return 0;
+n1  = 10;
+n2  = 20;
+result  = plus(n1, n2);
+return result;
 }
 
