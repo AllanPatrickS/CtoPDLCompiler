@@ -1,1 +1,1 @@
-(int i;int j;int a;int b;int c;int result;_t1=b-a;_t2=c*_t1;_t3=j+_t2;result=i+_t3;return 0)
+(int i;int j;int result;_t1=j+1;result=i+_t1;return 0)
