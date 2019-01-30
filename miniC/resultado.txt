@@ -1,1 +1,1 @@
-(int i;int j;int result;_t1=j+1;result=i+_t1;return 0)
+(int i;int result;result=0;(result=result+1(i < 10)?)*;¬(i < 10)? ;( (i < 10)?)*;  ¬(i < 10)?;return 0)

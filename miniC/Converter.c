@@ -345,6 +345,24 @@ void visitAssignStmt2    (struct ASSIGN* assign) {
 		insert(aux, "child", "]");
     }
     //printf(" = ");
+	switch(assign->expr->e){
+		case eRela:
+			insert(aux, "child", assign->ID);
+			break;
+		case eIntnum:
+			insert(aux, "child", assign->ID);
+			insert(aux, "child", "=");
+			break;
+		case eFloatnum:
+			insert(aux, "child", assign->ID);
+			insert(aux, "child", "=");
+			break;
+		case eId:
+			insert(aux, "child", assign->ID);
+			insert(aux, "child", "=");
+			break;
+	}
+
     visitExpr2(assign->expr);
 }
 void visitCallStmt2      (struct CALL* call) {
@@ -452,7 +470,9 @@ void visitExpr2          (struct EXPR* expr) {
             break;
 			
 		case eRela:
+			tag = - tam - 1;
             visitExpr2(expr->expression.relaop_->lhs);
+			tag =0;
             switch(expr->expression.relaop_->r) {
                 case eLT:
                     insert(aux, "child", " < ");
@@ -470,7 +490,9 @@ void visitExpr2          (struct EXPR* expr) {
                     insert(aux, "child", " >= ");
                     break;
             }
+			tag = - tam - 1;
             visitExpr2(expr->expression.relaop_->rhs);
+			tag =0;
             break;	
 			
 		case eEqlt:
@@ -494,9 +516,6 @@ void visitExpr2          (struct EXPR* expr) {
             break;
 			
 		case eId:
-			printf("%d\n",tag);
-			printf("%d\n",tam);
-			printf("%s\n\n",expr->expression.ID_->ID);
             visitId_s2(expr->expression.ID_);
             break;
 			
@@ -717,17 +736,22 @@ void visitIf_s2          (struct IF_S* if_s) {
 void visitId_s2          (struct ID_S* id_s) {
    //printf("%s",id_s->ID);
    rows = tag + tam;
-   if(tam==1)rows = tag;
-   else rows = tag + tam;
-   if(tag==0){
-	   Parts3[0][3]= id_s->ID;
+   if(rows==-1){
+	   insert(aux,"child",id_s->ID);
    }
-   else if(tag==1){
-	   Parts3[0][1]= id_s->ID;
-   }
-   else {
-	   rows--;
-	   Parts3[rows][1]= id_s->ID;
+   else{
+	    if(tam==1)rows = tag;
+		else rows = tag + tam;
+		if(tag==0){
+			Parts3[0][3]= id_s->ID;
+		}
+		else if(tag==1){
+			Parts3[0][1]= id_s->ID;
+		}
+		else {
+			rows--;
+			Parts3[rows][1]= id_s->ID;
+		}  
    }
 
    if(id_s->expr != NULL) {
