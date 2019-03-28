@@ -33,3 +33,4 @@ void visitIf_s2					(struct IF_S* if_s);
 void visitId_s2					(struct ID_S* id_s);
 void InsertSemicolon			(struct STMT* stmt);
 void Parts						(struct EXPR* expr);
+void methodsFunction			(char *ID);

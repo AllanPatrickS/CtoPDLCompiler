@@ -8,5 +8,13 @@ int main ()
     } while (i < 10);
 	
     while(i<10);
+    result = plus(n1, n2);
     return 0;
+}
+
+int plus(int n1, int n2)
+{
+    int sum;
+    sum = n1 + n2;
+    return sum;
 }

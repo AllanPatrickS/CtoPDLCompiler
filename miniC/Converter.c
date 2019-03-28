@@ -22,12 +22,15 @@ No *aux2;
 FILE* fp;
 Numero* numero;
 int x = 0;
+int y = 0;
 int tag = 0;
 int id_tag = 0;
 int tam = 0;
+int tamMethod = 0;
 int rows;
 char *Parts3[100][4];
-int pont = 0;
+char *methodVector[100][2];
+int tamAux = 0;
 
 
 No* insert(No *no, char *choice, char *chars){
@@ -85,13 +88,25 @@ void BuildTree(struct PROGRAM* head){
     if(head->func != NULL){
         visitFunction2(head->func);
     }
+    printf("\n");
+    for(int i = 0; i<tamMethod;i++){
+        printf("%s", methodVector[i][0]);
+        printf(" = ");
+        printf("%s", methodVector[i][1]);
+        printf("\n");
+    }
+    printf("\n");
 	for(int i = 0; i<tam;i++){
 		for(int j = 0; j < 4; j++){
-			printf(Parts3[i][j]);
+            if(j == 1){
+                printf("= ");
+            }
+			printf("%s",Parts3[i][j]);
 			printf(" ");
 		}
-					printf("\n");
+		printf("\n");
 	}
+    printf("\n");
     print(root, fp);
     printf("\n");
 	fclose(fp);
@@ -150,7 +165,14 @@ void visitFunction2      (struct FUNCTION* func) {
             exit(1);
     }
 	if(strcmp(func->ID, "main")){
-	    insert(aux,"child", func->ID);
+        int present = 0;
+        for(int i = 0; i < tamMethod; i++){
+            if(!strcmp(func->ID, methodVector[i][1])){
+                present = 1;
+                insert(aux, "child", methodVector[i][0]);
+            }
+        }
+        if(present == 0){methodsFunction(func->ID);}
 		insert(aux, "child", "=");
 	}
 	insert(aux, "child", "(");
@@ -367,7 +389,14 @@ void visitAssignStmt2    (struct ASSIGN* assign) {
 }
 void visitCallStmt2      (struct CALL* call) {
     //printf("%s(", call->ID);
-	insert(aux, "child", call->ID);
+    int present = 0;
+    for(int i = 0; i < tamMethod; i++){
+        if(!strcmp(call->ID, methodVector[i][1])){
+            present = 1;
+            insert(aux, "child", methodVector[i][0]);
+        }
+    }
+    if(present == 0){methodsFunction(call->ID);}
 	insert(aux, "child", "(");
     if(call->arg != NULL) {
         visitArg2(call->arg);
@@ -395,14 +424,15 @@ void visitExpr2          (struct EXPR* expr) {
 			
 		case eAddi:
 			id_tag = 1;
+            tamAux = tam;
 			tag++;
             visitExpr2(expr->expression.addiop_->lhs);
             tag--;
 			if(expr->expression.addiop_->a == ePlus){
-                Parts3[tag][2] = "+";
+                Parts3[tag+tamAux][2] = "+";
 			}
             else{
-                Parts3[tag][2] = "-";
+                Parts3[tag+tamAux][2] = "-";
 			}
 			
             visitExpr2(expr->expression.addiop_->rhs);
@@ -412,18 +442,18 @@ void visitExpr2          (struct EXPR* expr) {
 			else{
 				Parts3[tam][0] = aux2->chars;
 				tam++;
-				for(int i = pont;i<tam;i++){
-					if(i>0){
+				for(int i = tamAux;i<tam;i++){
+					if(i>tamAux){
 						Parts3[i][3]= Parts3[i-1][0];
 					}
 				}
-				for(pont; pont<tam;pont++){
-					insert(aux, "child", Parts3[pont][0]);
+				for(tamAux; tamAux<tam;tamAux++){
+					insert(aux, "child", Parts3[tamAux][0]);
 					insert(aux, "child", "=");
-					insert(aux, "child", Parts3[pont][1]);
-					insert(aux, "child", Parts3[pont][2]);
-					insert(aux,"child",  Parts3[pont][3]);
-					if(!(pont+1==tam))
+					insert(aux, "child", Parts3[tamAux][1]);
+					insert(aux, "child", Parts3[tamAux][2]);
+					insert(aux,"child",  Parts3[tamAux][3]);
+					if(!(tamAux+1==tam))
 						insert(aux, "child", ";");
 				}
 				id_tag = 0;
@@ -433,14 +463,15 @@ void visitExpr2          (struct EXPR* expr) {
 		
 		case eMulti:
 			id_tag = 1;
+            tamAux = tam;
 			tag++;
             visitExpr2(expr->expression.multop_->lhs);
 			tag--;
 			if(expr->expression.multop_->m == eMult){
-				Parts3[tag][2] = "*";
+				Parts3[tag+tamAux][2] = "*";
 			}
             else{
-				Parts3[tag][2] = "/";
+				Parts3[tag+tamAux][2] = "/";
 			}
 
             visitExpr2(expr->expression.multop_->rhs);
@@ -450,18 +481,18 @@ void visitExpr2          (struct EXPR* expr) {
 			else{
 				Parts3[tam][0] = aux2->chars;
 				tam++;
-				for(int i = pont;i<tam-1;i++){
-					if(i>0){
+				for(int i = tamAux;i<tam-1;i++){
+					if(i>tamAux){
 						Parts3[i][3]= Parts3[i-1][0];
 					}
 				}
-				for(pont; pont<tam;pont++){
-					insert(aux, "child", Parts3[pont][0]);
+				for(tamAux; tamAux<tam;tamAux++){
+					insert(aux, "child", Parts3[tamAux][0]);
 					insert(aux, "child", "=");
-					insert(aux, "child", Parts3[pont][1]);
-					insert(aux, "child", Parts3[pont][2]);
-					insert(aux, "child", Parts3[pont][3]);
-					if(!pont+1==tam)
+					insert(aux, "child", Parts3[tamAux][1]);
+					insert(aux, "child", Parts3[tamAux][2]);
+					insert(aux, "child", Parts3[tamAux][3]);
+					if(!tamAux+1==tam)
 						insert(aux, "child", ";");
 				}
 				id_tag = 0;
@@ -470,9 +501,7 @@ void visitExpr2          (struct EXPR* expr) {
             break;
 			
 		case eRela:
-			tag = - tam - 1;
             visitExpr2(expr->expression.relaop_->lhs);
-			tag =0;
             switch(expr->expression.relaop_->r) {
                 case eLT:
                     insert(aux, "child", " < ");
@@ -490,9 +519,7 @@ void visitExpr2          (struct EXPR* expr) {
                     insert(aux, "child", " >= ");
                     break;
             }
-			tag = - tam - 1;
             visitExpr2(expr->expression.relaop_->rhs);
-			tag =0;
             break;	
 			
 		case eEqlt:
@@ -540,17 +567,14 @@ void visitExpr2          (struct EXPR* expr) {
 					//printf("%d", expr->expression.intnum);
 					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
 					rows = tag + tam;
-					if(tam==1)rows = tag;
-					else rows = tag + tam;
 					if(tag==0){
-					   Parts3[0][3]= numero->num;
+					   Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[0][1]= numero->num;
+					   Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   rows--;
-					   Parts3[rows][1]= numero->num;
+					   Parts3[rows-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}else if(numero == NULL){
@@ -558,17 +582,14 @@ void visitExpr2          (struct EXPR* expr) {
 					numero = novo;
 					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
 					rows = tag + tam;
-					if(tam==1)rows = tag;
-					else rows = tag + tam;
 					if(tag==0){
-					   Parts3[0][3]= numero->num;
+					   Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[0][1]= numero->num;
+					   Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   rows--;
-					   Parts3[rows][1]= numero->num;
+					   Parts3[rows-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}
@@ -594,34 +615,30 @@ void visitExpr2          (struct EXPR* expr) {
 				case 1:
 				if(numero != NULL){
 					snprintf(numero->num, 255*sizeof(char), "%f", (float)expr->expression.floatnum);
-					if(tam==1)rows = tag;
-					else rows = tag + tam;
-					if(tag==0){
-					   Parts3[0][1]= numero->num;
+					rows = tag + tam;
+                    if(tag==0){
+					   Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[0][3]= numero->num;
+					   Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   rows--;
-					   Parts3[rows][1]= numero->num;
+					   Parts3[rows-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}else if(numero == NULL){
 					Numero* novo = (Numero*)malloc(sizeof(Numero));
 					numero = novo;
 					snprintf(numero->num, 255*sizeof(char), "%f", (float)expr->expression.floatnum);
-					if(tam==1)rows = tag;
-					else rows = tag + tam;
-					if(tag==0){
-					   Parts3[0][1]= numero->num;
+					rows = tag + tam;
+                    if(tag==0){
+					   Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[0][3]= numero->num;
+					   Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   rows--;
-					   Parts3[rows][1]= numero->num;
+					   Parts3[rows-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}
@@ -648,6 +665,7 @@ void visitWhile_s2       (struct WHILE_S* while_s) {
         visitExpr2(while_s->cond);
 		insert(aux,"child",")?");
         //printf(");\n");
+        visitStmt2(while_s->stmt);
 		insert(aux, "child", ")*;¬(");
 		aux2 = aux;
 		visitExpr2(while_s->cond);
@@ -736,21 +754,18 @@ void visitIf_s2          (struct IF_S* if_s) {
 void visitId_s2          (struct ID_S* id_s) {
    //printf("%s",id_s->ID);
    rows = tag + tam;
-   if(rows==-1){
+   if(id_tag==0){
 	   insert(aux,"child",id_s->ID);
    }
    else{
-	    if(tam==1)rows = tag;
-		else rows = tag + tam;
 		if(tag==0){
-			Parts3[0][3]= id_s->ID;
+			Parts3[tamAux][3]= id_s->ID;
 		}
 		else if(tag==1){
-			Parts3[0][1]= id_s->ID;
+			Parts3[tamAux][1]= id_s->ID;
 		}
 		else {
-			rows--;
-			Parts3[rows][1]= id_s->ID;
+			Parts3[rows-1][1]= id_s->ID;
 		}  
    }
 
@@ -817,5 +832,18 @@ void Parts(struct EXPR* expr){
             break;
         default:
             break;    
-    }   
+    } 
+      
+}
+
+void methodsFunction(char* ID){
+    char var[] = "_yX";
+	int buffersize = 100;
+	char* variable = malloc(buffersize);
+    var[2] = ++y + '0';
+    strncpy(variable,var,buffersize);
+    methodVector[tamMethod][0] = variable;
+    methodVector[tamMethod][1] = ID;
+    insert(aux, "child", methodVector[tamMethod][0]);
+    tamMethod++;
 }
