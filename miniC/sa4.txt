@@ -5,10 +5,10 @@ int main ()
     while (i < 10)
     {
         int a;
-        while (j<10)
+        for (k=0;k<10;k=k+1)
         {
             int b;
-            for (k=0;k<10;k=k+1)
+            while (j < 10)
             {
                 int c;
                 c = 3;

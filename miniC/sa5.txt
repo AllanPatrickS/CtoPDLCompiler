@@ -11,8 +11,10 @@ int func2(int n)
 int main ()
 {
     int result;
+    int comp1;
+    int comp2;
 
-    result = (3 + 2) / 4 * 10 + 2 + 100;
+    result = 1 + 2 / 3 + 4 * 5;
 
     if (result > 0)
     {
@@ -21,14 +23,8 @@ int main ()
         func2(result);
     }
 
-    {
-        int comp1;
-        comp1 = 10;
-        {
-            int comp2;
-            comp2 = 20;
-        }
-    }
+    comp1 = 10;
+    comp2 = 20;
 
     return 0;
 }

@@ -27,7 +27,6 @@ int tag = 0;
 int id_tag = 0;
 int tam = 0;
 int tamMethod = 0;
-int rows;
 char *Parts3[100][4];
 char *methodVector[100][2];
 int tamAux = 0;
@@ -481,7 +480,7 @@ void visitExpr2          (struct EXPR* expr) {
 			else{
 				Parts3[tam][0] = aux2->chars;
 				tam++;
-				for(int i = tamAux;i<tam-1;i++){
+				for(int i = tamAux;i<tam;i++){
 					if(i>tamAux){
 						Parts3[i][3]= Parts3[i-1][0];
 					}
@@ -566,30 +565,28 @@ void visitExpr2          (struct EXPR* expr) {
 				if(numero != NULL){
 					//printf("%d", expr->expression.intnum);
 					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
-					rows = tag + tam;
 					if(tag==0){
-					   Parts3[tamAux][3]= numero->num;
+					    Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[tamAux][1]= numero->num;
+					    Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   Parts3[rows-1][1]= numero->num;
+					    Parts3[tag-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}else if(numero == NULL){
 					Numero* novo = (Numero*)malloc(sizeof(Numero));
 					numero = novo;
 					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
-					rows = tag + tam;
 					if(tag==0){
-					   Parts3[tamAux][3]= numero->num;
+					    Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[tamAux][1]= numero->num;
+					    Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   Parts3[rows-1][1]= numero->num;
+                        Parts3[tag-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}
@@ -615,30 +612,28 @@ void visitExpr2          (struct EXPR* expr) {
 				case 1:
 				if(numero != NULL){
 					snprintf(numero->num, 255*sizeof(char), "%f", (float)expr->expression.floatnum);
-					rows = tag + tam;
                     if(tag==0){
-					   Parts3[tamAux][3]= numero->num;
+					    Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[tamAux][1]= numero->num;
+					    Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   Parts3[rows-1][1]= numero->num;
+					    Parts3[tag-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}else if(numero == NULL){
 					Numero* novo = (Numero*)malloc(sizeof(Numero));
 					numero = novo;
 					snprintf(numero->num, 255*sizeof(char), "%f", (float)expr->expression.floatnum);
-					rows = tag + tam;
                     if(tag==0){
-					   Parts3[tamAux][3]= numero->num;
+					    Parts3[tamAux][3]= numero->num;
 					}
 					else if(tag==1){
-					   Parts3[tamAux][1]= numero->num;
+					    Parts3[tamAux][1]= numero->num;
 					}
 					else {
-					   Parts3[rows-1][1]= numero->num;
+					    Parts3[tag-1][1]= numero->num;
 					}
 					numero = numero->prox;
 				}
@@ -753,7 +748,6 @@ void visitIf_s2          (struct IF_S* if_s) {
 }
 void visitId_s2          (struct ID_S* id_s) {
    //printf("%s",id_s->ID);
-   rows = tag + tam;
    if(id_tag==0){
 	   insert(aux,"child",id_s->ID);
    }
@@ -765,7 +759,7 @@ void visitId_s2          (struct ID_S* id_s) {
 			Parts3[tamAux][1]= id_s->ID;
 		}
 		else {
-			Parts3[rows-1][1]= id_s->ID;
+			Parts3[tag-1][1]= id_s->ID;
 		}  
    }
 
