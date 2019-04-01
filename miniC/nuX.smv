@@ -1,0 +1,118 @@
+MODULE main
+VAR
+	Program : Program(nextLoc);
+	nextLoc: location
+ASSIGN
+
+	init(location) := 0;
+	esac;
+	
+MODULE Program(nextLoc)
+VAR
+	FunctionList : FunctionList();
+	DecList : DecList();
+	
+MODULE FunctionList
+VAR
+    Function : Function();
+	FunctionList : FunctionList();
+	
+MODULE Function
+VAR
+    Type : Type();
+	ParamList : ParamList();
+	CompoundStmt : CompoundStmt();
+	
+MODULE Parameter
+VAR
+    Type : Type();
+	
+MODULE Type
+VAR
+    cs : {q1,p1};
+	
+MODULE ParamList
+VAR
+	ParamList : ParamList();
+	Identifier : Identifier();
+	
+MODULE CompoundStmt
+VAR
+    StmtList : StmtList();
+	DecList : DecList();
+	
+MODULE DecList
+VAR
+    DecList : DecList();
+	Declaration : Declaration();
+	
+MODULE StmtList
+VAR
+    Stmt : Stmt();
+	
+MODULE Identifier
+VAR
+    Intnum : Intnum();
+	
+MODULE Stmt
+VAR
+    RetStmt : RetStmt();
+	ForStmt : ForStmt();
+	IfStmt : IfStmt();
+	WhileStmt : WhileStmt();
+	AssignStmt : AssignStmt();
+	CallStmt : CallStmt();
+	
+MODULE Declaration
+VAR
+    Type : Type();
+	IdentList : IdentList();
+	
+MODULE RetStmt
+VAR
+    Expr : Expr();
+	
+MODULE ForStmt
+VAR
+    cs : {q1,p1};
+	
+MODULE IfStmt
+VAR
+    cs : {q1,p1};
+	
+MODULE WhileStmt
+VAR
+    cs : {q1,p1};
+	
+MODULE AssignStmt
+VAR
+    Assign : Assign();
+	
+MODULE CallStmt
+VAR
+    Call : Call();
+	
+MODULE IdentList
+VAR
+    IdentList : IdentList();
+	Identifier : Identifier();
+	
+MODULE Expr
+VAR
+    cs : {q1,p1};
+	
+MODULE Assign
+VAR
+    Expr : Expr();
+	
+MODULE Call
+VAR
+    ArgList : ArgList();
+	
+MODULE ArgList
+VAR
+    cs : {q1,p1};
+	
+MODULE Intnum
+VAR
+    cs : {q1,p1};

@@ -14,7 +14,7 @@ typedef struct Numero{
 }Numero;
 
 No* CreateTree();
-No* insert						(No *no, char *choice, char *chars);
+No* insert						(No *no, int choice, char *chars);
 void print						(No *no, FILE* fp);
 void BuildTree					(struct PROGRAM* head);
 void  visitDeclaration2			(struct DECLARATION* decl);

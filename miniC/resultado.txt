@@ -1,1 +1,2 @@
-(int i;int j;int k;( (i < 10)?int a;(k=0;(k < 10)?; int b;( (j < 10)?int c;c=3)*;  ¬(j < 10)?;b=5; k=k+1)*;¬(k < 10)?)*;  ¬(i < 10)?;return 0)
+_y1=(int n1;int n2;int sum;sum=n1+n2;return sum)
+(int n1;int n2;int result;n1=10;n2=20;_y1(n1, n2);return 0)
