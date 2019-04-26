@@ -1,9 +1,0 @@
-Problemas no Código:
-
-1 - Return (Func->ID) retornando nada.
-
-2 - Parametros não estão sendo inseridos na chamada da função dentro da main.
-
-3 - Arvore em forma de Lista Encadeada.
-
-4 - Função de fora está fora de ordem na árvore.

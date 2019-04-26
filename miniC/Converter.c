@@ -7,7 +7,8 @@
 #include "symboltable.h"
 #include "Converter.h"
 #include "AST.h"
-#include <string.h> 
+#include <string.h>
+#include "PDLtoNux.h" 
  
 bool _isParam2 = false;
 bool _needPrinted2 = false;
@@ -15,12 +16,14 @@ bool _isOtherComp2 = false;
 bool _isCompound2 = false;
 Type_e _curType2;
 No *root;
+Nolist *rootValor;
+Nolist *auxValor;
 No *aux;
 No *aux2;
 No *treeSet[100];
 FILE* fp;
 Numero* numero;
-int setTam = 0;
+int setTam = -1;
 int x = 0;
 int y = 0;
 int tag = 0;
@@ -32,18 +35,18 @@ int tamMethod = 0;
 char *Parts3[100][4];
 char *methodVector[100][2];
 
-No* insert(No *no, int choice, char *chars){
+No* insert(No *no, int choices, char *chars){
     if (root==NULL){
         root = (No*)malloc(sizeof(No));
         root->child = NULL;
         root->parent = NULL;
         root->chars = chars;
         aux = root;
- 
+
         return root;
     }
     else {
-        if (choice == 0){
+        if (choices == 0){
             No* noAux = (No*)malloc(sizeof(No));
             noAux->child = NULL;
             noAux->parent = NULL;
@@ -52,29 +55,31 @@ No* insert(No *no, int choice, char *chars){
             aux = no->child;
             return aux;
  
-        }else if(choice == 1){
+        }else if(choices == 1){
+            choice = 0;
             No* noAux = (No*)malloc(sizeof(No));
             noAux->child = NULL;
             noAux->parent = NULL;
             noAux->chars = chars;
-            no->parent = noAux;
-            aux = no->parent;
+            treeSet[setTam]->parent = noAux;
+            aux = treeSet[setTam]->parent;
+            treeSet[setTam] = noAux;
             return aux;
         }
     }
 }
- 
-void print(No *no, FILE* fp){
+
+void print(No *no){
     if(no!=NULL){
        	printf("%s ",no->chars);
-        fprintf(fp, "%s", no->chars);
+        fprintf(fp, "%s ", no->chars);
  
         if(no->child!=NULL){
-            print(no->child, fp);
+            print(no->child);
         }
         if(no->parent!=NULL){
-            print(no->parent, fp);
-        }
+            print(no->parent);
+        }   
     }
 }
  
@@ -89,10 +94,8 @@ void BuildTree(struct PROGRAM* head){
     }
     printf("\n");
     for(int i = 0; i<tamMethod;i++){
-        printf("%s", methodVector[i][0]);
-        printf(" = ");
-        printf("%s", methodVector[i][1]);
-        printf("\n");
+        printf("%s = ", methodVector[i][0]);
+        printf("%s\n", methodVector[i][1]);
     }
     printf("\n");
 	for(int i = 0; i<tam;i++){
@@ -100,19 +103,26 @@ void BuildTree(struct PROGRAM* head){
             if(j == 1){
                 printf("= ");
             }
-			printf("%s",Parts3[i][j]);
-			printf(" ");
+			printf("%s ",Parts3[i][j]);
 		}
 		printf("\n");
 	}
     printf("\n");
-    print(root, fp);
+    print(root);
     printf("\n");
 	fclose(fp);
+	Nolist* teste;
+	teste = rootValor;
+	printf("printando vetor de chars das condições:\n");
+	while(teste != NULL){
+	    printf("%s\n",teste->chars);
+	    teste = teste->next;
+	}
+    conv(root,rootValor);
 }
  
 void visitDeclaration2(struct DECLARATION* decl) {
-    _isParam2 = false;   //needed when we have to decide it is parameter or variable.
+    _isParam2 = false;
     if(decl->prev != NULL) {
         visitDeclaration2(decl->prev);
     }
@@ -130,6 +140,7 @@ void visitDeclaration2(struct DECLARATION* decl) {
     visitIdentifier2(decl->id);
     _needPrinted2 = false;
 }
+
 void visitFunction2(struct FUNCTION* func) {
 	 if(func->prev != NULL) {
         visitFunction2(func->prev);
@@ -151,38 +162,38 @@ void visitFunction2(struct FUNCTION* func) {
             if(!strcmp(func->ID, methodVector[i][1])){
                 present = 1;
                 insert(aux, choice, methodVector[i][0]);
-                choice = 0;
             }
         }
         if(present == 0){methodsFunction(func->ID);}
+        TreeFunction();
 		insert(aux, choice, "=");
 	}
 	insert(aux, choice, "(");
-    choice = 0;
-    treeSet[setTam] = aux;
-    setTam++;
+    if(!strcmp(func->ID, "main")){
+        TreeFunction();
+    }
+
     if(func->param != NULL) {
         visitParameter2(func->param);
     }
 	visitCompoundStmt2(func->cstmt);
-    insert(aux, choice, ")");
-	insert(aux,choice,"\n");
+    insert(aux, choice, ")\n");
+    TreesubFunction();
     choice = 1;
-    treeSet[setTam] = aux;
-    setTam++;
     deleteScope(&scopeTail);
 }
 void visitIdentifier2(struct IDENTIFIER* iden) {
     if(iden->prev != NULL) {
         visitIdentifier2(iden->prev);
+
     }
-	if(( _curType2 == eInt) && (_isParam2 == false)) insert(aux,choice,"int ");
-	if(( _curType2 == eFloat) && (_isParam2 == false)) insert(aux,choice,"float ");	
+	if(( _curType2 == eInt) && (_isParam2 == false)) insert(aux,choice,"int");
+	if(( _curType2 == eFloat) && (_isParam2 == false)) insert(aux,choice,"float");	
 	insert(aux, choice, iden->ID);
 	insert(aux,choice,";");
+    choice = 1;
     if(iden->intnum > 0) {
 		insert(aux, choice, "[");
-		
 		char num[255];
 		
 		snprintf(num, sizeof(iden->intnum), "%d",10);
@@ -211,8 +222,9 @@ void visitIdentifier2(struct IDENTIFIER* iden) {
     }
 }
 void visitStmt2(struct STMT* stmt) {
-    if(stmt->prev != NULL)
+    if(stmt->prev != NULL){
         visitStmt2(stmt->prev);
+    }
 	
     switch(stmt->s) {
         case eAssign:
@@ -228,11 +240,14 @@ void visitStmt2(struct STMT* stmt) {
         case eRet:
 			InsertSemicolon(stmt);
             if(stmt->stmt.return_ == NULL){
-				insert(aux, choice, "return;");
+				insert(aux, choice, "return");
+                insert(aux, choice, ";");
+                TreeFunction();
             }
             else {
 				aux2 = aux;
-				insert(aux, choice, "return ");
+				insert(aux, choice, "return");
+                TreeFunction();
                 visitExpr2(stmt->stmt.return_);
             }
             break;
@@ -271,21 +286,16 @@ void visitParameter2(struct PARAMETER* param) {
     if(param->prev != NULL) {
         visitParameter2(param->prev);
         if(strcmp(aux->chars, ";")) {
-            insert(aux, choice, ", ");
-            treeSet[setTam] = aux;
-            setTam++;
-            choice = 1;
+            insert(aux, choice, ",");
         }
     }
     switch(param->t) {
         case eInt:
-			insert(aux, choice, "int ");
-            choice = 0;			
+			insert(aux, choice, "int");
             _curType2 = eInt;
             break;
         case eFloat:
-			insert(aux, choice, "float ");
-            choice = 0;
+			insert(aux, choice, "float");
             _curType2 = eFloat;
             break;
         default:
@@ -327,17 +337,21 @@ void visitAssignStmt2(struct ASSIGN* assign) {
 	switch(assign->expr->e){
 		case eRela:
 			insert(aux, choice, assign->ID);
+            TreeFunction();
 			break;
 		case eIntnum:
 			insert(aux, choice, assign->ID);
+            TreeFunction();
 			insert(aux, choice, "=");
 			break;
 		case eFloatnum:
 			insert(aux, choice, assign->ID);
+            TreeFunction();
 			insert(aux, choice, "=");
 			break;
 		case eId:
 			insert(aux, choice, assign->ID);
+            TreeFunction();
 			insert(aux, choice, "=");
 			break;
 	}
@@ -353,6 +367,7 @@ void visitCallStmt2(struct CALL* call) {
         }
     }
     if(present == 0){methodsFunction(call->ID);}
+    TreeFunction();
 	insert(aux, choice, "(");
     if(call->arg != NULL) {
         visitArg2(call->arg);
@@ -362,7 +377,7 @@ void visitCallStmt2(struct CALL* call) {
 void visitArg2           (struct ARG* arg) {
     if(arg->prev != NULL) {
         visitArg2(arg->prev);
-		insert(aux, choice, ", ");
+		insert(aux, choice, ",");
     }
 	aux2 = aux;
     visitExpr2(arg->expr);
@@ -457,19 +472,19 @@ void visitExpr2(struct EXPR* expr) {
             visitExpr2(expr->expression.relaop_->lhs);
             switch(expr->expression.relaop_->r) {
                 case eLT:
-                    insert(aux, choice, " < ");
+                    insert(aux, choice, "<");
                     break;
 
                 case eGT:
-                    insert(aux, choice, " > ");
+                    insert(aux, choice, ">");
                     break;
 
                 case eLE:
-                    insert(aux, choice, " <= ");
+                    insert(aux, choice, "<=");
                     break;
 
                 case eGE:
-                    insert(aux, choice, " >= ");
+                    insert(aux, choice, ">=");
                     break;
             }
             visitExpr2(expr->expression.relaop_->rhs);
@@ -478,9 +493,9 @@ void visitExpr2(struct EXPR* expr) {
 		case eEqlt:
             visitExpr2(expr->expression.eqltop_->lhs);
             if(expr->expression.eqltop_->e == eEQ) {
-                insert(aux, choice, " == ");
+                insert(aux, choice, "==");
             } else {
-                insert(aux, choice, " != ");
+                insert(aux, choice, "!=");
             }
             visitExpr2(expr->expression.eqltop_->rhs);
             break;
@@ -501,50 +516,50 @@ void visitExpr2(struct EXPR* expr) {
 			
 		case eIntnum:
 			switch(id_tag){
-				case 0:
-				if(numero != NULL){
-					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
-					insert(aux, choice, numero->num);
-					numero = numero->prox;
-				}else if(numero == NULL){
-					Numero* novo = (Numero*)malloc(sizeof(Numero));
-					numero = novo;
-					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
-					insert(aux, choice, numero->num);
-					numero = numero->prox;
-				}
-				break;
-				case 1:
-				if(numero != NULL){
-					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
-					if(tag==0){
-					    Parts3[tamAux][3]= numero->num;
-					}
-					else if(tag==1){
-					    Parts3[tamAux][1]= numero->num;
-					}
-					else {
-					    Parts3[tag-1][1]= numero->num;
-					}
-					numero = numero->prox;
-				}else if(numero == NULL){
-					Numero* novo = (Numero*)malloc(sizeof(Numero));
-					numero = novo;
-					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
-					if(tag==0){
-					    Parts3[tamAux][3]= numero->num;
-					}
-					else if(tag==1){
-					    Parts3[tamAux][1]= numero->num;
-					}
-					else {
-                        Parts3[tag-1][1]= numero->num;
-					}
-					numero = numero->prox;
-				}
-				break;
-			} 
-            break;
+                  				case 0:
+                  				if(numero != NULL){
+                  					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
+                  					insert(aux, choice, numero->num);
+                  					numero = numero->prox;
+                  				}else if(numero == NULL){
+                  					Numero* novo = (Numero*)malloc(sizeof(Numero));
+                  					numero = novo;
+                  					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
+                  					insert(aux, choice, numero->num);
+                  					numero = numero->prox;
+                  				}
+                  				break;
+                  				case 1:
+                  				if(numero != NULL){
+                  					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
+                  					if(tag==0){
+                  					    Parts3[tamAux][3]= numero->num;
+                  					}
+                  					else if(tag==1){
+                  					    Parts3[tamAux][1]= numero->num;
+                  					}
+                  					else {
+                  					    Parts3[tag-1][1]= numero->num;
+                  					}
+                  					numero = numero->prox;
+                  				}else if(numero == NULL){
+                  					Numero* novo = (Numero*)malloc(sizeof(Numero));
+                  					numero = novo;
+                  					snprintf(numero->num, 255*sizeof(char), "%d", (int)expr->expression.intnum);
+                  					if(tag==0){
+                  					    Parts3[tamAux][3]= numero->num;
+                  					}
+                  					else if(tag==1){
+                  					    Parts3[tamAux][1]= numero->num;
+                  					}
+                  					else {
+                                          Parts3[tag-1][1]= numero->num;
+                  					}
+                  					numero = numero->prox;
+                  				}
+                  				break;
+                  			}
+                              break;
 
 		case eFloatnum:
 			switch(id_tag){
@@ -601,30 +616,52 @@ void visitWhile_s2(struct WHILE_S* while_s) {
         scopeTail = newScope(sDOWHILE, scopeTail);
         scopeTail->parent->dowhile_n++;
 		insert(aux, choice, "(");
+        TreeFunction();
         visitStmt2(while_s->stmt);
+        choice = 1;
 		insert(aux, choice, "(");
+        TreeFunction();
 		aux2 = aux;
         visitExpr2(while_s->cond);
-		insert(aux,choice,")?");
+		insert(aux,choice,")");
+        insert(aux,choice,"?");
+        choice = 1;
         visitStmt2(while_s->stmt);
-		insert(aux, choice, ")*;¬(");
+		insert(aux, choice, ")");
+        insert(aux, choice, "*");
+        insert(aux, choice, ";");
+        choice = 1;
+        insert(aux, choice, "¬");
+        insert(aux, choice, "(");
 		aux2 = aux;
 		visitExpr2(while_s->cond);
-		insert(aux,choice,")? ");
-		
+		insert(aux,choice,")");
+        insert(aux,choice,"?");
+        insertList(while_s->cond);
     } else {
         scopeTail = newScope(sWHILE, scopeTail);
         scopeTail->parent->while_n++;
-		insert(aux, choice, "( (");
+		insert(aux, choice, "(");
+        insert(aux, choice, "(");
+        TreeFunction();
 		aux2 = aux;
         visitExpr2(while_s->cond);
-		insert(aux,choice,")?");
+		insert(aux,choice,")");
+        insert(aux,choice,"?");
+        choice = 1;
         visitStmt2(while_s->stmt);
-    	insert(aux, choice, ")*;  ¬(");
+    	insert(aux, choice, ")");
+        insert(aux, choice, "*");
+        insert(aux, choice, ";");
+        choice = 1;
+        insert(aux, choice, "¬");
+        insert(aux, choice, "(");
+        TreeFunction();
 		aux2 = aux;
         visitExpr2(while_s->cond);
-        insert(aux,choice,")?");
-    
+        insert(aux,choice,")");
+        insert(aux,choice,"?");
+        insertList(while_s->cond);
 	}
     deleteScope(&scopeTail);
 }
@@ -632,44 +669,72 @@ void visitFor_s2(struct FOR_S* for_s) {
     scopeTail = newScope(sFOR, scopeTail);
     scopeTail->parent->for_n++;
 	insert(aux, choice,"(");
+    TreeFunction();
     visitAssignStmt2(for_s->init);
-	insert(aux,choice,";(");
+    insert(aux,choice,";");
+    choice = 1;
+	insert(aux,choice,"(");
+    TreeFunction();
 	aux2 = aux;
     visitExpr2(for_s->cond);
-    insert(aux,choice,")?");
-	insert(aux, choice, "; ");
+    insert(aux,choice,")");
+    insert(aux,choice,"?");
+    insert(aux,choice,";");
+    choice = 1;
 	visitStmt2(for_s->stmt);
-	insert(aux,choice, "; ");
+	insert(aux,choice, ";");
+    choice = 1;
     visitAssignStmt2(for_s->inc);
-	insert(aux,choice,")*;¬(");
+	insert(aux,choice,")");
+    insert(aux,choice,"*");
+    insert(aux,choice,";");
+    choice = 1;
+    insert(aux,choice,"¬");
+    insert(aux,choice,"(");
+    TreeFunction();
 	aux2 = aux;
 	visitExpr2(for_s->cond);
-	insert(aux,choice,")?");
+	insert(aux,choice,")");
+    insert(aux,choice,"?");
+    insertList(for_s->cond);
     deleteScope(&scopeTail);
 }
 void visitIf_s2(struct IF_S* if_s) {
     scopeTail = newScope(sIF, scopeTail);
     scopeTail->parent->if_n++;
 
-    insert(aux, choice, "( (");
+    insert(aux, choice, "(");
+    insert(aux, choice, "(");
+    TreeFunction();
 	aux2 = aux;
     visitExpr2(if_s->cond);
-	insert(aux,choice,")? ");
+	insert(aux,choice,")");
+    insert(aux,choice,"?");
+    insertList(if_s->cond);
 	if(if_s->if_->s){
 		insert(aux,choice,";");
 	}
+    choice = 1;
     visitStmt2(if_s->if_);
-    insert(aux,choice," )");
+    insert(aux,choice,")");
+    choice = 1;
     if (if_s->else_ != NULL) {
-        insert(aux, choice, "U(¬(");
+        insert(aux, choice, "U");
+        insert(aux, choice, "(");
+        insert(aux, choice, "¬");
+        insert(aux, choice, "(");
+        TreeFunction();
 		aux2 = aux;
         visitExpr2(if_s->cond);
-        insert(aux,choice,")? ");
+        insert(aux,choice,")");
+        insert(aux,choice,"?");
 		if(if_s->else_->s){
 			insert(aux,choice,";");
 		}
+        choice = 1;
         visitStmt2(if_s->else_);
 		insert(aux, choice, ")");
+        choice = 1;
     } 
 }
 void visitId_s2(struct ID_S* id_s) {
@@ -698,9 +763,8 @@ void visitId_s2(struct ID_S* id_s) {
 
 void InsertSemicolon(struct STMT* stmt){
 	if(stmt->prev !=NULL){
-		
 		insert(aux, choice, ";");
-
+        choice = 1;
 	}
 }
 
@@ -743,4 +807,229 @@ void methodsFunction(char* ID){
     methodVector[tamMethod][1] = ID;
     insert(aux, choice, methodVector[tamMethod][0]);
     tamMethod++;
+}
+
+void TreeFunction(){
+    setTam++;
+    treeSet[setTam] = aux;
+}
+
+void TreesubFunction(){
+    treeSet[setTam] = NULL;
+    setTam--;
+}
+
+void insertList(struct EXPR* expr){
+    /*
+        Logica para acessar a arvore e pegar o valor e a condição de todas as condições utilizadas no programa
+        com o proposito de adicionar em uma lista que será usada para descrever as transições de formulas no NuXmV;
+    */
+
+    char* lhs = NULL;
+    char* rhs = NULL;
+    char* relation;
+
+    switch(expr->e){
+        case eRela:
+            lhs = visitExprValue(lhs,expr->expression.relaop_->lhs);
+            switch(expr->expression.relaop_->r) {
+                case eLT:
+                    relation = "<";
+                    break;
+                case eGT:
+                    relation = ">";
+                    break;
+                case eLE:
+                    relation = "<=";
+                    break;
+                case eGE:
+                    relation = ">=";
+                    break;
+            }
+            rhs = visitExprValue(rhs, expr->expression.relaop_->rhs);
+            break;
+        case eEqlt:
+            lhs = visitExprValue(lhs,expr->expression.eqltop_->lhs);
+            switch(expr->expression.eqltop_->e){
+                case eEQ:
+                    relation = "==";
+                    break;
+                case eNE:
+                    relation = "!=";
+                    break;
+            }
+            rhs = visitExprValue(rhs,expr->expression.eqltop_->rhs);
+            break;
+    }
+
+
+    if(rootValor == NULL){
+        rootValor = (Nolist*)malloc(sizeof(Nolist));
+        Nolist *NoauxValor = (Nolist*)malloc(sizeof(Nolist));
+        Nolist *NoauxValor2 = (Nolist*)malloc(sizeof(Nolist));
+
+        rootValor->chars = lhs;
+        rootValor->next = NoauxValor;
+
+        NoauxValor->chars = relation;
+        NoauxValor->next = NoauxValor2;
+
+        NoauxValor2->chars = rhs;
+        NoauxValor2->next = NULL;
+
+        auxValor = NoauxValor2;
+    }else{
+        Nolist *NoauxValor = (Nolist*)malloc(sizeof(Nolist));
+        Nolist *NoauxValor2 = (Nolist*)malloc(sizeof(Nolist));
+        Nolist *NoauxValor3 = (Nolist*)malloc(sizeof(Nolist));
+
+        auxValor->next = NoauxValor;
+
+        NoauxValor->chars = lhs;
+        NoauxValor->next = NoauxValor2;
+
+        NoauxValor2->chars = relation;
+        NoauxValor2->next = NoauxValor3;
+
+        NoauxValor3->chars = rhs;
+        NoauxValor3->next = NULL;
+
+        auxValor = NoauxValor3;
+    }
+}
+
+
+char* visitExprValue(char* current, struct EXPR* expr){
+    char* aux;
+
+    if(current == NULL){
+        switch(expr->e){
+            case eId:
+                return expr->expression.ID_->ID;
+                break;
+            case eIntnum:
+                if(numero != NULL){
+                    snprintf(numero->num, 255*sizeof(char), "%d" , (int)expr->expression.intnum);
+                    current = numero->num;
+                    numero = numero->prox;
+                    return current;
+                }else{
+                    Numero* novo = (Numero*)malloc(sizeof(Numero));
+                    numero = novo;
+                    snprintf(numero->num, 255*sizeof(char), "%d" , (int)expr->expression.intnum);
+                    current = numero->num;
+                    numero = numero->prox;
+                    return current;
+                }
+                break;
+            case eFloatnum:
+                if(numero != NULL){
+                    snprintf(numero->num, 255*sizeof(char), "%f" , (float)expr->expression.floatnum);
+                    current = numero->num;
+                    numero = numero->prox;
+                }else{
+                    Numero* novo = (Numero*)malloc(sizeof(Numero));
+                    numero = novo;
+                    snprintf(numero->num, 255*sizeof(char), "%f" , (float)expr->expression.floatnum);
+                    current = numero->num;
+                    numero = numero->prox;
+                }
+                return current;
+                break;
+            case eUnop:
+                current = "-";
+                visitExprValue(current,expr->expression.unop_->expr);
+                break;
+            case eAddi:
+                current = visitExprValue(current,expr->expression.addiop_->lhs);
+                if(expr->expression.addiop_->a == ePlus){
+                    aux = "+";
+                }
+                else{
+                    aux = "-";
+                }
+                current = concat_strings(current,aux);
+                return visitExprValue(current,expr->expression.addiop_->rhs);
+                break;
+            case eMulti:
+                current = visitExprValue(current,expr->expression.multop_->lhs);
+                if(expr->expression.multop_->m == eMult){
+                    aux = "*";
+                }
+                else{
+                    aux = "/";
+                }
+                current = concat_strings(current,aux);
+                return visitExprValue(current,expr->expression.multop_->rhs);
+                break;
+        }
+    }else{
+        switch(expr->e){
+            case eId:
+                return concat_strings(current, expr->expression.ID_->ID);
+                break;
+            case eIntnum:
+                if(numero != NULL){
+                    snprintf(numero->num, 255*sizeof(char), "%d" , (int)expr->expression.intnum);
+                    aux = numero->num;
+                    numero = numero->prox;
+                    return concat_strings(current,aux);
+                }else{
+                    Numero* novo = (Numero*)malloc(sizeof(Numero));
+                    numero = novo;
+                    snprintf(numero->num, 255*sizeof(char), "%d" , (int)expr->expression.intnum);
+                    aux = numero->num;
+                    numero = numero->prox;
+                    return concat_strings(current,aux);
+                }
+                break;
+            case eFloatnum:
+                if(numero != NULL){
+                    snprintf(numero->num, 255*sizeof(char), "%f" , (float)expr->expression.floatnum);
+                    aux = numero->num;
+                    numero = numero->prox;
+                }else{
+                    Numero* novo = (Numero*)malloc(sizeof(Numero));
+                    numero = novo;
+                    snprintf(numero->num, 255*sizeof(char), "%f" , (float)expr->expression.floatnum);
+                    aux = numero->num;
+                    numero = numero->prox;
+                }
+                return concat_strings(current,aux);
+                break;
+            case eUnop:
+                current = "-";
+                visitExprValue(current,expr->expression.unop_->expr);
+                break;
+            case eAddi:
+                current = concat_strings(current, visitExprValue(current,expr->expression.addiop_->lhs));
+                if(expr->expression.addiop_->a == ePlus){
+                    aux = "+";
+                }
+                else{
+                    aux = "-";
+                }
+                current = concat_strings(current,aux);
+                return visitExprValue(current,expr->expression.addiop_->rhs);
+                break;
+            case eMulti:
+                current = concat_strings(current,visitExprValue(current,expr->expression.multop_->lhs));
+                if(expr->expression.multop_->m == eMult){
+                    aux = "*";
+                }
+                else{
+                    aux = "/";
+                }
+                current = concat_strings(current,aux);
+                return visitExprValue(current,expr->expression.multop_->rhs);
+                break;
+        }
+    }
+}
+
+char* concat_strings(char* str1,char* str2){
+    char * str3 = (char *) malloc(1 + strlen(str1)+ strlen(str2) );
+    strcpy(str3, str1);
+    strcat(str3, str2);
+    return str3;
 }

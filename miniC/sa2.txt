@@ -3,18 +3,10 @@ int main ()
     int i;
     int result;
     result = 0;
-    do {
-        result = result + 1;
-    } while (i < 10);
-	
-    while(i<10);
-    result = plus(n1, n2);
+    if(result < 10) {
+        result = result + 1;	
+    }else{
+	result = result - 1;
+    }
     return 0;
-}
-
-int plus(int n1, int n2)
-{
-    int sum;
-    sum = n1 + n2;
-    return sum;
 }

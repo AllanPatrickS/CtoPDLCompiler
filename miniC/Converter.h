@@ -1,3 +1,6 @@
+#ifndef CONVERTER_H_
+#define CONVERTER_H_
+
 
 #include "AST.h"
 
@@ -8,6 +11,11 @@ typedef struct No{
 	char *chars;
 }No;
 
+typedef struct Nolist{
+    struct Nolist* next;
+    char *chars;
+}Nolist;
+
 typedef struct Numero{
 	struct Numero* prox;
 	char num[255];
@@ -15,7 +23,7 @@ typedef struct Numero{
 
 No* CreateTree();
 No* insert						(No *no, int choice, char *chars);
-void print						(No *no, FILE* fp);
+void print						(No *no);
 void BuildTree					(struct PROGRAM* head);
 void  visitDeclaration2			(struct DECLARATION* decl);
 void  visitFunction2			(struct FUNCTION* func);
@@ -34,3 +42,10 @@ void visitId_s2					(struct ID_S* id_s);
 void InsertSemicolon			(struct STMT* stmt);
 void Parts						(struct EXPR* expr);
 void methodsFunction			(char *ID);
+void TreeFunction 				();
+void TreesubFunction			();
+void insertList(struct EXPR* expr);
+char* visitExprValue(char* current, struct EXPR* expr);
+char* concat_strings(char* str1,char* str2);
+
+#endif

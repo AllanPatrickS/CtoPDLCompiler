@@ -1,0 +1,16 @@
+int main ()
+{
+if (result + 1 > 0)
+{
+i  = 0;
+i  = 1;
+}
+
+else
+{
+i  = 2;
+i  = 3;
+}
+return 0;
+}
+

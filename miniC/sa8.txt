@@ -1,12 +1,14 @@
 int main ()
 {
-	if ( result+1 > 0)
+	if (result > 0)
     	{	
         	i = 0;
 			i = 1;
+			if(result > 5){
+				i = 0;
+			}
     	} else {
         	i = 2;
 			i = 3;
     	}
-	return 0;
 }
